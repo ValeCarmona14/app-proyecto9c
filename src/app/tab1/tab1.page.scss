@@ -1,0 +1,253 @@
+@import url('https://fonts.googleapis.com/css?family=Roboto');
+
+/* Paleta (equivalentes fijos de lighten/darken para que compile en cualquier Sass) */
+$fuente-principal: 'Roboto', sans-serif;
+$color-principal: #455a64;
+$claro-50: #ccd7dc;   /* lighten($color-principal, 50%) */
+$claro-60: #eaeff1;   /* lighten($color-principal, 60%) */
+$oscuro-15: #263137;  /* darken($color-principal, 15%)  */
+$bk1: 700px;
+
+/* el fondo de Ionic por defecto es oscuro; lo ponemos claro */
+ion-content {
+  --background: #ffffff;
+  font-family: $fuente-principal;
+  color: $color-principal;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.contenedor {
+  max-width: 1170px;
+  margin: 0 auto 1rem;
+  padding: 1.5rem;
+  line-height: 1.5;
+}
+
+.wrapper {
+  box-shadow: 0 0 20px 0 rgba(69, 90, 100, 0.7);
+  border-radius: 5px;
+
+  @media screen and (min-width: $bk1) {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+  }
+}
+
+.servicios {
+  list-style: none;
+  text-align: center;
+
+  @media screen and (min-width: $bk1) {
+    text-align: left;
+  }
+}
+
+.logo {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.info-empresa {
+  padding: 1rem;
+  background-color: $claro-50;
+
+  h3 {
+    text-align: center;
+
+    @media screen and (min-width: $bk1) {
+      text-align: left;
+      margin-bottom: 0.5rem;
+    }
+  }
+}
+
+.nombre-empresa {
+  color: $oscuro-15;
+}
+
+.contacto {
+  padding: 1rem;
+  background-color: $claro-60;
+
+  h3 {
+    margin-bottom: 1rem;
+  }
+}
+
+.formulario {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-gap: 1.25rem;
+
+  label {
+    display: block;
+  }
+
+  button,
+  input,
+  textarea {
+    width: 100%;
+    padding: 1rem;
+    border: 1px solid $claro-50;
+    background: #fff;
+    color: $color-principal;
+    font-family: $fuente-principal;
+  }
+
+  textarea {
+    resize: none;
+  }
+}
+
+.full {
+  grid-column: 1 / 3;
+}
+
+.boton-enviar {
+  background-color: $claro-50;
+  border: none;
+  border-radius: 5px;
+  text-transform: uppercase;
+  font-weight: bold;
+  cursor: pointer;
+
+  &:focus,
+  &:hover {
+    background-color: $color-principal;
+    color: #fff;
+    outline: 0;
+    transition: background-color 2s ease-out;
+  }
+
+  &[disabled] {
+    opacity: 0.6;
+    cursor: default;
+  }
+}
+
+/* ===================== MENSAJES ===================== */
+.alerta {
+  padding: 0.85rem 1rem;
+  border-radius: 5px;
+  margin-bottom: 1rem;
+  font-weight: bold;
+  text-align: center;
+
+  &.exito {
+    background: #d4edda;
+    color: #155724;
+  }
+  &.error {
+    background: #f8d7da;
+    color: #721c24;
+  }
+}
+
+/* ===================== LISTADO ===================== */
+.listado {
+  margin-top: 1.5rem;
+
+  h3 {
+    margin-bottom: 0.75rem;
+  }
+}
+
+.vacio {
+  color: #888;
+  font-style: italic;
+}
+
+.tabla {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+
+  th,
+  td {
+    border: 1px solid $claro-50;
+    padding: 0.6rem;
+    text-align: left;
+    vertical-align: top;
+  }
+
+  th {
+    background: $claro-50;
+  }
+
+  .msg-celda {
+    max-width: 220px;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  .acciones {
+    white-space: nowrap;
+  }
+}
+
+.btn-editar,
+.btn-eliminar,
+.btn-cancelar {
+  border: none;
+  border-radius: 4px;
+  padding: 0.4rem 0.7rem;
+  cursor: pointer;
+  font-weight: bold;
+  color: #fff;
+  margin: 0 2px;
+}
+.btn-editar {
+  background: #2980b9;
+}
+.btn-eliminar {
+  background: #c0392b;
+}
+.btn-cancelar {
+  background: #7f8c8d;
+}
+
+/* ===================== MODALES ===================== */
+.modal-fondo {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.modal {
+  background: #fff;
+  border-radius: 6px;
+  padding: 1.5rem;
+  width: 100%;
+  max-width: 520px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 0 25px rgba(0, 0, 0, 0.4);
+
+  h3 {
+    margin-bottom: 1rem;
+  }
+}
+
+.modal-chico {
+  max-width: 380px;
+  text-align: center;
+
+  p {
+    margin: 0.75rem 0 1.25rem;
+  }
+}
+
+.modal-acciones {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}

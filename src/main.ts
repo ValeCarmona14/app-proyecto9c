@@ -1,18 +1,17 @@
-import { bootstrapApplication } from '@angular/platform-browser';
-import { RouteReuseStrategy, provideRouter, withPreloading, PreloadAllModules } from '@angular/router';
-import { IonicRouteStrategy, provideIonicAngular } from '@ionic/angular';
+import { enableProdMode } from '@angular/core';
+import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 import { defineCustomElements } from '@ionic/pwa-elements/loader';
 
-import { routes } from './app/app.routes';
-import { AppComponent } from './app/app.component';
+import { AppModule } from './app/app.module';
+import { environment } from './environments/environment';
 
-// Call the element loader before the bootstrapApplication call
+if (environment.production) {
+  enableProdMode();
+}
+
+// Cargar los custom elements de Ionic PWA antes de arrancar
 defineCustomElements(window);
 
-bootstrapApplication(AppComponent, {
-  providers: [
-    { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
-    provideIonicAngular(),
-    provideRouter(routes, withPreloading(PreloadAllModules)),
-  ],
-}).catch((err) => console.error(err));
+platformBrowserDynamic()
+  .bootstrapModule(AppModule)
+  .catch((err: any) => console.error(err));

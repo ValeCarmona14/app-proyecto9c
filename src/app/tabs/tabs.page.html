@@ -1,3 +1,16 @@
+<!-- Barra superior con botón de cerrar sesión -->
+<ion-header>
+  <ion-toolbar color="primary">
+    <ion-title>Mi App</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="cerrarSesion()">
+        <ion-icon slot="start" name="log-out-outline"></ion-icon>
+        Cerrar sesión
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
 <ion-tabs>
 
   <ion-tab-bar slot="bottom">

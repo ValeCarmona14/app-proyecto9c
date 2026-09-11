@@ -1,17 +1,135 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>
-      Tab 1
-    </ion-title>
-  </ion-toolbar>
-</ion-header>
+<ion-content>
+  <div class="contenedor">
+    <h1 class="logo"><span class="nombre-empresa">Acme</span> Servicios</h1>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Tab 1</ion-title>
-    </ion-toolbar>
-  </ion-header>
+    <!-- Mensaje de éxito / error -->
+    <div class="alerta" *ngIf="mensaje" [class.exito]="tipoMensaje === 'exito'"
+         [class.error]="tipoMensaje === 'error'">
+      {{ mensaje }}
+    </div>
 
-  <app-explore-container name="Tab 1 page"></app-explore-container>
+    <div class="wrapper">
+      <div class="info-empresa">
+        <h3>Acme Servicios</h3>
+        <ul class="servicios">
+          <li><i class="fa fa-map-marker"></i> Calle Cualquiera, 44. 88880. Ciudad (Provincia)</li>
+          <li><i class="fa fa-mobile"></i> 555 555 000</li>
+          <li><i class="fa fa-envelope"></i> info@empresa.com</li>
+        </ul>
+      </div>
+
+      <div class="contacto">
+        <h3>Enviar Correo</h3>
+        <form class="formulario" #f="ngForm" (ngSubmit)="enviar(f)">
+          <p>
+            <label>Nombre</label>
+            <input type="text" name="nombre" [(ngModel)]="contacto.nombre" required>
+          </p>
+          <p>
+            <label>Empresa</label>
+            <input type="text" name="empresa" [(ngModel)]="contacto.empresa">
+          </p>
+          <p>
+            <label>Correo</label>
+            <input type="email" name="email" [(ngModel)]="contacto.email" required>
+          </p>
+          <p>
+            <label>Teléfono</label>
+            <input type="text" name="telefono" [(ngModel)]="contacto.telefono" required>
+          </p>
+          <p class="full">
+            <label>Mensaje</label>
+            <textarea name="mensaje" [(ngModel)]="contacto.mensaje" required></textarea>
+          </p>
+          <p class="full">
+            <button type="submit" class="boton-enviar" [disabled]="cargando">
+              {{ cargando ? 'Enviando...' : 'Enviar' }}
+            </button>
+          </p>
+        </form>
+      </div>
+    </div>
+
+    <!-- ============ DATOS EXISTENTES ============ -->
+    <section class="listado">
+      <h3>Datos existentes</h3>
+
+      <p class="vacio" *ngIf="!cargando && lista.length === 0">
+        No hay registros todavía.
+      </p>
+
+      <table class="tabla" *ngIf="lista.length > 0">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Nombre</th>
+            <th>Empresa</th>
+            <th>Correo</th>
+            <th>Teléfono</th>
+            <th>Mensaje</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let c of lista">
+            <td>{{ c.id }}</td>
+            <td>{{ c.nombre }}</td>
+            <td>{{ c.empresa }}</td>
+            <td>{{ c.email }}</td>
+            <td>{{ c.telefono }}</td>
+            <td class="msg-celda">{{ c.mensaje }}</td>
+            <td class="acciones">
+              <button class="btn-editar" (click)="abrirEditar(c)">Editar</button>
+              <button class="btn-eliminar" (click)="confirmarEliminar(c)">Eliminar</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+  </div>
+
+  <!-- ============ MODAL EDITAR ============ -->
+  <div class="modal-fondo" *ngIf="modalEditar" (click)="cerrarModales()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <h3>Editar registro #{{ editModel.id }}</h3>
+      <form class="formulario" #fe="ngForm" (ngSubmit)="guardarEdicion(fe)">
+        <p>
+          <label>Nombre</label>
+          <input type="text" name="enombre" [(ngModel)]="editModel.nombre" required>
+        </p>
+        <p>
+          <label>Empresa</label>
+          <input type="text" name="eempresa" [(ngModel)]="editModel.empresa">
+        </p>
+        <p>
+          <label>Correo</label>
+          <input type="email" name="eemail" [(ngModel)]="editModel.email" required>
+        </p>
+        <p>
+          <label>Teléfono</label>
+          <input type="text" name="etelefono" [(ngModel)]="editModel.telefono" required>
+        </p>
+        <p class="full">
+          <label>Mensaje</label>
+          <textarea name="emensaje" [(ngModel)]="editModel.mensaje" required></textarea>
+        </p>
+        <div class="modal-acciones full">
+          <button type="button" class="btn-cancelar" (click)="cerrarModales()">Cancelar</button>
+          <button type="submit" class="boton-enviar" [disabled]="cargando">Guardar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ============ MODAL ELIMINAR ============ -->
+  <div class="modal-fondo" *ngIf="modalEliminar" (click)="cerrarModales()">
+    <div class="modal modal-chico" (click)="$event.stopPropagation()">
+      <h3>Eliminar registro</h3>
+      <p>¿Seguro que quieres eliminar a <strong>{{ aEliminar?.nombre }}</strong>?</p>
+      <div class="modal-acciones">
+        <button class="btn-cancelar" (click)="cerrarModales()">Cancelar</button>
+        <button class="btn-eliminar" (click)="eliminar()" [disabled]="cargando">Eliminar</button>
+      </div>
+    </div>
+  </div>
 </ion-content>

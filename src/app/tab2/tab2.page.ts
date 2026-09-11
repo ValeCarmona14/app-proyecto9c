@@ -1,17 +1,5 @@
 import { Component, OnInit, inject } from '@angular/core';
-import {
-  IonHeader,
-  IonToolbar,
-  IonTitle,
-  IonContent,
-  IonGrid,
-  IonRow,
-  IonCol,
-  IonFab,
-  IonFabButton,
-  IonIcon,
-  ActionSheetController,
-} from '@ionic/angular';
+import { ActionSheetController } from '@ionic/angular';
 import { addIcons } from 'ionicons';
 import { camera, trash, close } from 'ionicons/icons';
 import type { UserPhoto } from '../services/photo.service';
@@ -21,7 +9,7 @@ import { PhotoService } from '../services/photo.service';
   selector: 'app-tab2',
   templateUrl: 'tab2.page.html',
   styleUrls: ['tab2.page.scss'],
-  imports: [IonHeader, IonToolbar, IonTitle, IonContent, IonGrid, IonRow, IonCol, IonFab, IonFabButton, IonIcon],
+  standalone: false,
 })
 export class Tab2Page implements OnInit {
   public photoService = inject(PhotoService);
