@@ -1,253 +1,121 @@
-@import url('https://fonts.googleapis.com/css?family=Roboto');
+@import url(https://fonts.googleapis.com/css?family=Montserrat);
 
-/* Paleta (equivalentes fijos de lighten/darken para que compile en cualquier Sass) */
-$fuente-principal: 'Roboto', sans-serif;
-$color-principal: #455a64;
-$claro-50: #ccd7dc;   /* lighten($color-principal, 50%) */
-$claro-60: #eaeff1;   /* lighten($color-principal, 60%) */
-$oscuro-15: #263137;  /* darken($color-principal, 15%)  */
-$bk1: 700px;
-
-/* el fondo de Ionic por defecto es oscuro; lo ponemos claro */
+/* el fondo lo aplicamos a ion-content en Ionic */
 ion-content {
-  --background: #ffffff;
-  font-family: $fuente-principal;
-  color: $color-principal;
+  --background: linear-gradient(rgba(196, 102, 0, 0.6), rgba(155, 89, 182, 0.6));
+  font-family: montserrat, arial, verdana;
 }
 
-* {
+#msform {
+  width: 400px;
+  margin: 50px auto;
+  text-align: center;
+  position: relative;
+}
+#msform fieldset {
+  background: white;
+  border: 0 none;
+  border-radius: 3px;
+  box-shadow: 0 0 15px 1px rgba(0, 0, 0, 0.4);
+  padding: 20px 30px;
   box-sizing: border-box;
+  width: 80%;
+  margin: 0 10%;
+  position: relative;
 }
-
-.contenedor {
-  max-width: 1170px;
-  margin: 0 auto 1rem;
-  padding: 1.5rem;
-  line-height: 1.5;
+#msform fieldset:not(:first-of-type) {
+  display: none;
 }
-
-.wrapper {
-  box-shadow: 0 0 20px 0 rgba(69, 90, 100, 0.7);
-  border-radius: 5px;
-
-  @media screen and (min-width: $bk1) {
-    display: grid;
-    grid-template-columns: 1fr 2fr;
-  }
+#msform input,
+#msform textarea {
+  padding: 15px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  margin-bottom: 10px;
+  width: 100%;
+  box-sizing: border-box;
+  font-family: montserrat;
+  color: #2c3e50;
+  font-size: 13px;
 }
-
-.servicios {
-  list-style: none;
-  text-align: center;
-
-  @media screen and (min-width: $bk1) {
-    text-align: left;
-  }
+#msform .action-button {
+  width: 100px;
+  background: #27ae60;
+  font-weight: bold;
+  color: white;
+  border: 0 none;
+  border-radius: 1px;
+  cursor: pointer;
+  padding: 10px;
+  margin: 10px 5px;
+  text-decoration: none;
+  font-size: 14px;
 }
-
-.logo {
-  text-align: center;
-  margin-bottom: 1rem;
+#msform .action-button:hover,
+#msform .action-button:focus {
+  box-shadow: 0 0 0 2px white, 0 0 0 3px #27ae60;
 }
-
-.info-empresa {
-  padding: 1rem;
-  background-color: $claro-50;
-
-  h3 {
-    text-align: center;
-
-    @media screen and (min-width: $bk1) {
-      text-align: left;
-      margin-bottom: 0.5rem;
-    }
-  }
-}
-
-.nombre-empresa {
-  color: $oscuro-15;
-}
-
-.contacto {
-  padding: 1rem;
-  background-color: $claro-60;
-
-  h3 {
-    margin-bottom: 1rem;
-  }
-}
-
-.formulario {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-gap: 1.25rem;
-
-  label {
-    display: block;
-  }
-
-  button,
-  input,
-  textarea {
-    width: 100%;
-    padding: 1rem;
-    border: 1px solid $claro-50;
-    background: #fff;
-    color: $color-principal;
-    font-family: $fuente-principal;
-  }
-
-  textarea {
-    resize: none;
-  }
-}
-
-.full {
-  grid-column: 1 / 3;
-}
-
-.boton-enviar {
-  background-color: $claro-50;
-  border: none;
-  border-radius: 5px;
+.fs-title {
+  font-size: 15px;
   text-transform: uppercase;
-  font-weight: bold;
-  cursor: pointer;
-
-  &:focus,
-  &:hover {
-    background-color: $color-principal;
-    color: #fff;
-    outline: 0;
-    transition: background-color 2s ease-out;
-  }
-
-  &[disabled] {
-    opacity: 0.6;
-    cursor: default;
-  }
+  color: #2c3e50;
+  margin-bottom: 10px;
 }
-
-/* ===================== MENSAJES ===================== */
-.alerta {
-  padding: 0.85rem 1rem;
-  border-radius: 5px;
-  margin-bottom: 1rem;
-  font-weight: bold;
-  text-align: center;
-
-  &.exito {
-    background: #d4edda;
-    color: #155724;
-  }
-  &.error {
-    background: #f8d7da;
-    color: #721c24;
-  }
+.fs-subtitle {
+  font-weight: normal;
+  font-size: 13px;
+  color: #666;
+  margin-bottom: 20px;
 }
-
-/* ===================== LISTADO ===================== */
-.listado {
-  margin-top: 1.5rem;
-
-  h3 {
-    margin-bottom: 0.75rem;
-  }
+#progressbar {
+  margin-bottom: 30px;
+  overflow: hidden;
+  counter-reset: step;
 }
-
-.vacio {
-  color: #888;
-  font-style: italic;
+#progressbar li {
+  list-style-type: none;
+  color: white;
+  text-transform: uppercase;
+  font-size: 9px;
+  width: 33.33%;
+  float: left;
+  position: relative;
 }
-
-.tabla {
+#progressbar li:before {
+  content: counter(step);
+  counter-increment: step;
+  width: 20px;
+  line-height: 20px;
+  display: block;
+  font-size: 10px;
+  color: #333;
+  background: white;
+  border-radius: 3px;
+  margin: 0 auto 5px auto;
+}
+#progressbar li:after {
+  content: '';
   width: 100%;
-  border-collapse: collapse;
-  font-size: 0.9rem;
-
-  th,
-  td {
-    border: 1px solid $claro-50;
-    padding: 0.6rem;
-    text-align: left;
-    vertical-align: top;
-  }
-
-  th {
-    background: $claro-50;
-  }
-
-  .msg-celda {
-    max-width: 220px;
-    white-space: pre-wrap;
-    word-break: break-word;
-  }
-
-  .acciones {
-    white-space: nowrap;
-  }
+  height: 2px;
+  background: white;
+  position: absolute;
+  left: -50%;
+  top: 9px;
+  z-index: -1;
 }
-
-.btn-editar,
-.btn-eliminar,
-.btn-cancelar {
-  border: none;
-  border-radius: 4px;
-  padding: 0.4rem 0.7rem;
-  cursor: pointer;
+#progressbar li:first-child:after {
+  content: none;
+}
+#progressbar li.active:before,
+#progressbar li.active:after {
+  background: #27ae60;
+  color: white;
+}
+/* mensaje de éxito / error */
+.msg {
+  font-size: 12px;
   font-weight: bold;
-  color: #fff;
-  margin: 0 2px;
+  margin: 8px 0;
 }
-.btn-editar {
-  background: #2980b9;
-}
-.btn-eliminar {
-  background: #c0392b;
-}
-.btn-cancelar {
-  background: #7f8c8d;
-}
-
-/* ===================== MODALES ===================== */
-.modal-fondo {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-  padding: 1rem;
-}
-
-.modal {
-  background: #fff;
-  border-radius: 6px;
-  padding: 1.5rem;
-  width: 100%;
-  max-width: 520px;
-  max-height: 90vh;
-  overflow-y: auto;
-  box-shadow: 0 0 25px rgba(0, 0, 0, 0.4);
-
-  h3 {
-    margin-bottom: 1rem;
-  }
-}
-
-.modal-chico {
-  max-width: 380px;
-  text-align: center;
-
-  p {
-    margin: 0.75rem 0 1.25rem;
-  }
-}
-
-.modal-acciones {
-  display: flex;
-  justify-content: flex-end;
-  gap: 0.5rem;
-  margin-top: 0.5rem;
-}
+.msg-exito { color: #27ae60; }
+.msg-error { color: #c0392b; }

@@ -1,17 +1,145 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>
-      Tab 3
-    </ion-title>
-  </ion-toolbar>
-</ion-header>
+<ion-content>
+  <!-- ===================== BARRA SUPERIOR (PERFIL) ===================== -->
+  <div class="topbar">
+    <button class="perfil-btn" (click)="toggleMenu()">
+      <ion-icon name="person-circle-outline"></ion-icon>
+    </button>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Tab 3</ion-title>
-    </ion-toolbar>
-  </ion-header>
+    <!-- capa para cerrar el menú al tocar fuera -->
+    <div class="menu-overlay" *ngIf="menuAbierto" (click)="cerrarMenu()"></div>
 
-  <app-explore-container name="Tab 3 page"></app-explore-container>
+    <!-- menú desplegable -->
+    <div class="menu" *ngIf="menuAbierto">
+      <button class="menu-item" (click)="irCrearCuenta()">
+        <ion-icon name="person-add-outline"></ion-icon>
+        Create an account
+      </button>
+      <button class="menu-item" (click)="cerrarSesion()">
+        <ion-icon name="log-out-outline"></ion-icon>
+        Cerrar sesión
+      </button>
+    </div>
+  </div>
+
+  <!-- ===================== SALUDO ===================== -->
+  <div class="hero">
+    <p class="saludo">¡Hola! 💪</p>
+    <h1 class="titulo">Tu día fitness</h1>
+    <p class="fecha">{{ fechaHoy }}</p>
+
+    <div class="progreso-caja">
+      <div class="progreso-info">
+        <span>Hábitos de hoy</span>
+        <strong>{{ completados }}/{{ habitos.length }}</strong>
+      </div>
+      <ion-progress-bar [value]="progreso"></ion-progress-bar>
+    </div>
+  </div>
+
+  <div class="cuerpo">
+    <!-- ===================== HÁBITOS ===================== -->
+    <ion-card class="tarjeta">
+      <ion-card-header>
+        <ion-card-title>
+          <ion-icon name="checkmark-circle"></ion-icon>
+          Hábitos de hoy
+        </ion-card-title>
+        <ion-card-subtitle>Marca lo que ya cumpliste</ion-card-subtitle>
+      </ion-card-header>
+
+      <ion-card-content>
+        <div class="fila-agregar">
+          <ion-input
+            fill="outline"
+            placeholder="Nuevo hábito (ej. Tomar 2L de agua)"
+            [(ngModel)]="nuevoHabito"
+            [ngModelOptions]="{ standalone: true }"
+            (keyup.enter)="agregarHabito()">
+          </ion-input>
+          <ion-button (click)="agregarHabito()">
+            <ion-icon name="add" slot="icon-only"></ion-icon>
+          </ion-button>
+        </div>
+
+        <ion-list lines="full">
+          <ion-item *ngFor="let h of habitos; let i = index">
+            <ion-checkbox
+              slot="start"
+              [(ngModel)]="h.hecho"
+              [ngModelOptions]="{ standalone: true }">
+            </ion-checkbox>
+            <ion-label [class.tachado]="h.hecho">{{ h.nombre }}</ion-label>
+            <ion-button fill="clear" color="danger" slot="end" (click)="borrarHabito(i)">
+              <ion-icon name="trash" slot="icon-only"></ion-icon>
+            </ion-button>
+          </ion-item>
+        </ion-list>
+
+        <p class="vacio" *ngIf="habitos.length === 0">
+          Aún no tienes hábitos. ¡Agrega el primero! 🌱
+        </p>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- ===================== RUTINA ===================== -->
+    <ion-card class="tarjeta">
+      <ion-card-header>
+        <ion-card-title>
+          <ion-icon name="barbell-outline"></ion-icon>
+          Registro de rutina
+        </ion-card-title>
+        <ion-card-subtitle>¿Cuánto cargaste hoy?</ion-card-subtitle>
+      </ion-card-header>
+
+      <ion-card-content>
+        <ion-input
+          fill="outline"
+          class="campo"
+          placeholder="Ejercicio (ej. Sentadilla)"
+          [(ngModel)]="nuevoEjercicio"
+          [ngModelOptions]="{ standalone: true }">
+        </ion-input>
+
+        <ion-grid class="sin-padding">
+          <ion-row>
+            <ion-col size="6">
+              <ion-input fill="outline" type="number" placeholder="kg"
+                [(ngModel)]="nuevoKg" [ngModelOptions]="{ standalone: true }"></ion-input>
+            </ion-col>
+            <ion-col size="6">
+              <ion-input fill="outline" type="number" placeholder="reps"
+                [(ngModel)]="nuevoReps" [ngModelOptions]="{ standalone: true }"></ion-input>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+
+        <ion-button expand="block" class="btn-agregar" (click)="agregarSerie()">
+          <ion-icon name="add" slot="start"></ion-icon>
+          Agregar serie
+        </ion-button>
+
+        <ion-list lines="full">
+          <ion-item *ngFor="let s of series; let i = index">
+            <ion-label>
+              <h2>{{ s.ejercicio }}</h2>
+              <p>{{ s.kg }} kg × {{ s.reps }} reps = <strong>{{ s.kg * s.reps }} kg</strong></p>
+            </ion-label>
+            <ion-button fill="clear" color="danger" slot="end" (click)="borrarSerie(i)">
+              <ion-icon name="trash" slot="icon-only"></ion-icon>
+            </ion-button>
+          </ion-item>
+        </ion-list>
+
+        <p class="vacio" *ngIf="series.length === 0">
+          Registra tu primera serie del día. 🏋️
+        </p>
+
+        <div class="total" *ngIf="series.length > 0">
+          <ion-icon name="flame-outline"></ion-icon>
+          <span>Volumen total de hoy</span>
+          <strong>{{ volumenTotal }} kg</strong>
+        </div>
+      </ion-card-content>
+    </ion-card>
+  </div>
 </ion-content>

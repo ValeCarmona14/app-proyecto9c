@@ -12,13 +12,10 @@ export class LoginPage {
   @ViewChild('msform', { static: false })
   msform?: ElementRef<HTMLFormElement>;
 
-  /** 'login' o 'register' */
   mode: 'login' | 'register' = 'login';
-
   cargando = false;
   mensaje = '';
 
-  /** datos del formulario de registro (multistep) */
   data = {
     email: '',
     password: '',
@@ -32,10 +29,9 @@ export class LoginPage {
     address: '',
   };
 
-  /** datos del formulario de inicio de sesión */
   loginData = { email: '', password: '' };
 
-  private animating = false; // evita glitches por multi-click rápido
+  private animating = false;
 
   constructor(private auth: AuthService, private router: Router) {}
 
@@ -59,7 +55,7 @@ export class LoginPage {
       );
       if (res.ok) {
         this.auth.guardarSesion(res.usuario);
-        this.router.navigateByUrl('/tabs/tab1', { replaceUrl: true });
+        this.router.navigateByUrl('/tabs/tab3', { replaceUrl: true });
       } else {
         this.mensaje = res.error || 'Credenciales incorrectas.';
       }
@@ -70,7 +66,7 @@ export class LoginPage {
     }
   }
 
-  // ==================== REGISTRAR (Submit) ====================
+  // ==================== REGISTRAR ====================
   async registrar(): Promise<void> {
     this.mensaje = '';
     if (!this.data.email || !this.data.password) {
@@ -88,11 +84,10 @@ export class LoginPage {
         this.mensaje = res.error || 'No se pudo registrar.';
         return;
       }
-      // Registro correcto -> inicia sesión automáticamente y entra a la app
       const login = await this.auth.login(this.data.email, this.data.password);
       if (login.ok) {
         this.auth.guardarSesion(login.usuario);
-        this.router.navigateByUrl('/tabs/tab1', { replaceUrl: true });
+        this.router.navigateByUrl('/tabs/tab3', { replaceUrl: true });
       } else {
         this.loginData.email = this.data.email;
         this.cambiarModo('login');
@@ -170,7 +165,6 @@ export class LoginPage {
     );
   }
 
-  /** Reemplaza a $.animate: llama a `step(now)` con now de 1 -> 0 */
   private animate(
     duration: number,
     step: (now: number) => void,
@@ -190,7 +184,6 @@ export class LoginPage {
     requestAnimationFrame(tick);
   }
 
-  /** Easing que en el original venía del plugin de jQuery */
   private easeInOutBack(x: number): number {
     const c1 = 1.70158;
     const c2 = c1 * 1.525;
