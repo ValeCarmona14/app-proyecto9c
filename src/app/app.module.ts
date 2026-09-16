@@ -7,6 +7,7 @@ import {
   IonApp,
   IonRouterOutlet,
 } from '@ionic/angular';
+import { IonicStorageModule } from '@ionic/storage-angular';
 
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
@@ -16,13 +17,13 @@ import { AppRoutingModule } from './app-routing.module';
   imports: [
     BrowserModule,
     AppRoutingModule,
-    // Componentes de Ionic que usa app.component.html
     IonApp,
     IonRouterOutlet,
+    IonicStorageModule.forRoot(), // <-- inicializa Ionic Storage
   ],
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
-    provideIonicAngular(), // inicializa Ionic (reemplaza a IonicModule.forRoot)
+    provideIonicAngular(),
   ],
   bootstrap: [AppComponent],
 })

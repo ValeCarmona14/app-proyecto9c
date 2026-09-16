@@ -15,7 +15,7 @@ ion-content {
 .topbar {
   position: relative;
   padding: 1rem 1rem 0;
-  display: flex;
+  text-align: right;
 }
 
 .perfil-btn {
@@ -234,4 +234,43 @@ ion-card-subtitle {
     margin-left: auto;
     font-size: 1.2rem;
   }
+}
+
+/* ===================== MODALES DE EDICIÓN ===================== */
+.modal-fondo {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.modal {
+  background: #fff;
+  border-radius: 16px;
+  padding: 1.25rem;
+  width: 100%;
+  max-width: 420px;
+  box-shadow: 0 0 25px rgba(0, 0, 0, 0.4);
+
+  h3 {
+    margin: 0 0 1rem;
+    color: #1f2937;
+  }
+
+  ion-input {
+    --color: #000000;              /* color del texto que escribes */
+    --placeholder-color: #888888;  /* color del texto de ejemplo */
+    color: #000000;
+  }
+}
+
+.modal-acciones {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 1rem;
 }
