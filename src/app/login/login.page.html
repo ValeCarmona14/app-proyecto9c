@@ -1,91 +1,79 @@
-<ion-content>
+<ion-content [fullscreen]="true" class="login-fondo">
+  <!-- Animación 1: manchas de color que flotan lento en el fondo -->
+  <div class="mancha m1"></div>
+  <div class="mancha m2"></div>
+  <div class="mancha m3"></div>
 
-  <!-- ============ MODO: INICIAR SESIÓN ============ -->
-  <div id="loginbox" *ngIf="mode === 'login'">
-    <h2 class="fs-title">Iniciar sesión</h2>
-    <h3 class="fs-subtitle">Ingresa para continuar</h3>
+  <main class="contenedor">
+    <!-- Animación 2: la tarjeta sube al entrar; se sacude si hay error -->
+    <div class="entrada">
+    <section class="tarjeta" [class.sacudir]="sacudir">
+      <div class="marca">
+        <div class="logo" aria-hidden="true">
+          <span></span><span></span><span></span>
+          <span></span><span class="hoy"></span><span></span>
+        </div>
+        <h1>FitHábitos</h1>
+        <p class="lema">Un día a la vez.</p>
+      </div>
 
-    <input type="email" name="loginEmail" placeholder="Email"
-           [(ngModel)]="loginData.email" />
-    <input type="password" name="loginPass" placeholder="Password"
-           [(ngModel)]="loginData.password" />
+      <div class="selector" role="tablist">
+        <div class="pastilla" [class.derecha]="modo === 'registro'"></div>
+        <button role="tab" [attr.aria-selected]="modo === 'login'" (click)="cambiarModo('login')">Entrar</button>
+        <button role="tab" [attr.aria-selected]="modo === 'registro'" (click)="cambiarModo('registro')">Crear cuenta</button>
+      </div>
 
-    <p class="msg" *ngIf="mensaje">{{ mensaje }}</p>
+      <form (ngSubmit)="enviar()" autocomplete="on">
+        <label *ngIf="modo === 'registro'" class="campo aparecer">
+          <span>Nombre</span>
+          <input name="nombre" [(ngModel)]="nombre" autocomplete="name" placeholder="¿Cómo te llamas?" />
+        </label>
 
-    <input type="button" class="action-button" value="Entrar"
-           [disabled]="cargando" (click)="login()" />
+        <label class="campo">
+          <span>Servidor (IP:puerto)</span>
+          <input name="servidor" [(ngModel)]="servidor" inputmode="url" autocapitalize="off"
+                 autocorrect="off" spellcheck="false" placeholder="10.0.2.2:8080" />
+          <small class="ayuda">En el emulador usa 10.0.2.2:8080. En un celular, la IP de tu PC.</small>
+        </label>
 
-    <p class="switch">
-      ¿No tienes cuenta?
-      <a (click)="cambiarModo('register')">Regístrate</a>
-    </p>
-  </div>
+        <label class="campo">
+          <span>Correo</span>
+          <input name="email" type="email" [(ngModel)]="email" autocomplete="email"
+                 inputmode="email" placeholder="tucorreo@ejemplo.com" />
+        </label>
 
-  <!-- ============ MODO: REGISTRO (multistep) ============ -->
-  <form id="msform" #msform *ngIf="mode === 'register'">
-    <!-- progressbar -->
-    <ul id="progressbar">
-      <li class="active">Cuenta</li>
-      <li>Redes sociales</li>
-      <li>Datos personales</li>
-    </ul>
+        <label class="campo">
+          <span>Contraseña</span>
+          <div class="con-ojo">
+            <input name="password" [type]="verPass ? 'text' : 'password'" [(ngModel)]="password"
+                   [autocomplete]="modo === 'login' ? 'current-password' : 'new-password'"
+                   placeholder="Mínimo 6 caracteres" />
+            <button type="button" class="ojo" (click)="verPass = !verPass"
+                    [attr.aria-label]="verPass ? 'Ocultar contraseña' : 'Mostrar contraseña'">
+              <ion-icon [name]="verPass ? 'eye-off-outline' : 'eye-outline'"></ion-icon>
+            </button>
+          </div>
+        </label>
 
-    <!-- Paso 1: cuenta -->
-    <fieldset>
-      <h2 class="fs-title">Crea tu cuenta</h2>
-      <h3 class="fs-subtitle">Paso 1</h3>
-      <input type="email" name="email" placeholder="Email"
-             [(ngModel)]="data.email" />
-      <input type="password" name="pass" placeholder="Password"
-             [(ngModel)]="data.password" />
-      <input type="password" name="cpass" placeholder="Confirm Password"
-             [(ngModel)]="data.cpassword" />
-      <input type="button" class="next action-button" value="Next"
-             (click)="next($event.target)" />
-    </fieldset>
+        <label *ngIf="modo === 'registro'" class="campo aparecer">
+          <span>Confirma tu contraseña</span>
+          <input name="password2" [type]="verPass ? 'text' : 'password'" [(ngModel)]="password2"
+                 autocomplete="new-password" placeholder="Escríbela otra vez" />
+        </label>
 
-    <!-- Paso 2: redes -->
-    <fieldset>
-      <h2 class="fs-title">Redes sociales</h2>
-      <h3 class="fs-subtitle">Tu presencia en la red</h3>
-      <input type="text" name="twitter" placeholder="Twitter"
-             [(ngModel)]="data.twitter" />
-      <input type="text" name="facebook" placeholder="Facebook"
-             [(ngModel)]="data.facebook" />
-      <input type="text" name="gplus" placeholder="Google Plus"
-             [(ngModel)]="data.gplus" />
-      <input type="button" class="previous action-button" value="Previous"
-             (click)="previous($event.target)" />
-      <input type="button" class="next action-button" value="Next"
-             (click)="next($event.target)" />
-    </fieldset>
+        <p class="error" *ngIf="error" role="alert">{{ error }}</p>
 
-    <!-- Paso 3: datos personales -->
-    <fieldset>
-      <h2 class="fs-title">Datos personales</h2>
-      <h3 class="fs-subtitle">Nunca los venderemos</h3>
-      <input type="text" name="fname" placeholder="First Name"
-             [(ngModel)]="data.fname" />
-      <input type="text" name="lname" placeholder="Last Name"
-             [(ngModel)]="data.lname" />
-      <input type="text" name="phone" placeholder="Phone"
-             [(ngModel)]="data.phone" />
-      <textarea name="address" placeholder="Address"
-                [(ngModel)]="data.address"></textarea>
+        <button class="principal" type="submit" [disabled]="cargando">
+          <ion-spinner *ngIf="cargando" name="crescent"></ion-spinner>
+          <span *ngIf="!cargando">{{ modo === 'login' ? 'Entrar' : 'Crear mi cuenta' }}</span>
+        </button>
+      </form>
 
-      <p class="msg" *ngIf="mensaje">{{ mensaje }}</p>
-
-      <input type="button" class="previous action-button" value="Previous"
-             (click)="previous($event.target)" />
-      <a class="submit action-button" (click)="registrar()">
-        {{ cargando ? '...' : 'Submit' }}
-      </a>
-    </fieldset>
-
-    <p class="switch">
-      ¿Ya tienes cuenta?
-      <a (click)="cambiarModo('login')">Inicia sesión</a>
-    </p>
-  </form>
-
+      <p class="offline" *ngIf="!enLinea">
+        <ion-icon name="cloud-offline-outline"></ion-icon>
+        Sin conexión: puedes entrar con una cuenta que ya usaste en este dispositivo.
+      </p>
+    </section>
+    </div>
+  </main>
 </ion-content>

@@ -1,0 +1,68 @@
+<ion-content>
+  <!-- multistep form -->
+  <form id="msform" #msform>
+    <!-- progressbar -->
+    <ul id="progressbar">
+      <li class="active">Account Setup</li>
+      <li>Social Profiles</li>
+      <li>Personal Details</li>
+    </ul>
+
+    <!-- Paso 1 -->
+    <fieldset>
+      <h2 class="fs-title">Create your account</h2>
+      <h3 class="fs-subtitle">This is step 1</h3>
+      <input type="email" name="email" placeholder="Email"
+             [(ngModel)]="data.email" [ngModelOptions]="{ standalone: true }" />
+      <input type="password" name="pass" placeholder="Password"
+             [(ngModel)]="data.password" [ngModelOptions]="{ standalone: true }" />
+      <input type="password" name="cpass" placeholder="Confirm Password"
+             [(ngModel)]="data.cpassword" [ngModelOptions]="{ standalone: true }" />
+      <input type="button" class="next action-button" value="Next"
+             (click)="next($event.target)" />
+    </fieldset>
+
+    <!-- Paso 2 -->
+    <fieldset>
+      <h2 class="fs-title">Social Profiles</h2>
+      <h3 class="fs-subtitle">Your presence on the social network</h3>
+      <input type="text" name="twitter" placeholder="Twitter"
+             [(ngModel)]="data.twitter" [ngModelOptions]="{ standalone: true }" />
+      <input type="text" name="facebook" placeholder="Facebook"
+             [(ngModel)]="data.facebook" [ngModelOptions]="{ standalone: true }" />
+      <input type="text" name="gplus" placeholder="Google Plus"
+             [(ngModel)]="data.gplus" [ngModelOptions]="{ standalone: true }" />
+      <input type="button" class="previous action-button" value="Previous"
+             (click)="previous($event.target)" />
+      <input type="button" class="next action-button" value="Next"
+             (click)="next($event.target)" />
+    </fieldset>
+
+    <!-- Paso 3 -->
+    <fieldset>
+      <h2 class="fs-title">Personal Details</h2>
+      <h3 class="fs-subtitle">We will never sell it</h3>
+      <input type="text" name="fname" placeholder="First Name"
+             [(ngModel)]="data.fname" [ngModelOptions]="{ standalone: true }" />
+      <input type="text" name="lname" placeholder="Last Name"
+             [(ngModel)]="data.lname" [ngModelOptions]="{ standalone: true }" />
+      <input type="text" name="phone" placeholder="Phone"
+             [(ngModel)]="data.phone" [ngModelOptions]="{ standalone: true }" />
+      <textarea name="address" placeholder="Address"
+                [(ngModel)]="data.address" [ngModelOptions]="{ standalone: true }"></textarea>
+
+      <!-- mensaje de éxito / error -->
+      <p class="msg" *ngIf="mensaje"
+         [class.msg-exito]="tipoMensaje === 'exito'"
+         [class.msg-error]="tipoMensaje === 'error'">
+        {{ mensaje }}
+      </p>
+
+      <input type="button" class="previous action-button" value="Previous"
+             (click)="previous($event.target)" />
+      <a class="submit action-button" (click)="submit()">
+        {{ cargando ? '...' : 'Submit' }}
+      </a>
+    </fieldset>
+  </form>
+</ion-content>

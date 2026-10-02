@@ -34,4 +34,21 @@
 
 /* @import "@ionic/angular/css/palettes/dark.always.css"; */
 /* @import "@ionic/angular/css/palettes/dark.class.css"; */
-@import "@ionic/angular/css/palettes/dark.system.css";
+//@import "@ionic/angular/css/palettes/dark.system.css";
+
+/* ===== Pega esto AL FINAL de tu src/global.scss (no borres lo que ya tiene) ===== */
+
+/* Hoja inferior del día: esquinas redondeadas y fondo de la paleta */
+ion-modal.hoja-dia {
+  --border-radius: 28px;
+  --background: var(--fh-paper);
+}
+
+/* Respeta a quien tiene desactivadas las animaciones en su sistema */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

@@ -1,0 +1,42 @@
+import { addIcons } from 'ionicons';
+import {
+  arrowBack, barbellOutline, bookOutline, checkmark, checkmarkDoneOutline,
+  chevronBack, chevronForward, close, cloudDoneOutline, cloudOfflineOutline,
+  cloudUploadOutline, createOutline, ellipseOutline, eyeOffOutline, eyeOutline, imageOutline,
+  logOutOutline, moonOutline, personAddOutline, personCircleOutline,
+  sparklesOutline, syncOutline, trashOutline, walkOutline, waterOutline,
+} from 'ionicons/icons';
+
+/**
+ * En Ionic 9 los iconos hay que "registrarlos" para que se vean.
+ * Si agregas un icono nuevo en un .html, impórtalo aquí y agrégalo abajo.
+ */
+export function registrarIconos() {
+  addIcons({
+    'arrow-back': arrowBack,
+    'barbell-outline': barbellOutline,
+    'book-outline': bookOutline,
+    'checkmark': checkmark,
+    'checkmark-done-outline': checkmarkDoneOutline,
+    'chevron-back': chevronBack,
+    'chevron-forward': chevronForward,
+    'close': close,
+    'cloud-done-outline': cloudDoneOutline,
+    'cloud-offline-outline': cloudOfflineOutline,
+    'cloud-upload-outline': cloudUploadOutline,
+    'create-outline': createOutline,
+    'ellipse-outline': ellipseOutline,
+    'eye-off-outline': eyeOffOutline,
+    'eye-outline': eyeOutline,
+    'image-outline': imageOutline,
+    'log-out-outline': logOutOutline,
+    'moon-outline': moonOutline,
+    'person-add-outline': personAddOutline,
+    'person-circle-outline': personCircleOutline,
+    'sparkles-outline': sparklesOutline,
+    'sync-outline': syncOutline,
+    'trash-outline': trashOutline,
+    'walk-outline': walkOutline,
+    'water-outline': waterOutline,
+  });
+}

@@ -1,0 +1,61 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar class="barra">
+    <div class="saludo" slot="start">
+      <p>Hola{{ nombre ? ', ' + nombre : '' }}</p>
+    </div>
+    <ion-buttons slot="end">
+      <button class="estado" [ngClass]="estado" (click)="sincronizarAhora()"
+              [attr.aria-label]="textoEstado[estado]">
+        <ion-icon [name]="iconoEstado[estado]"></ion-icon>
+        <span>{{ textoEstado[estado] }}</span>
+      </button>
+      <ion-button (click)="abrirCuenta()" aria-label="Cuenta">
+        <ion-icon slot="icon-only" name="person-circle-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<!-- La foto de fondo va directo en el fondo del ion-content, con una capa clara encima -->
+<ion-content [fullscreen]="true" [class.con-foto]="!!fondo" [style.--background]="fondoCss">
+  <input #archivo type="file" accept="image/*" hidden (change)="fotoElegida($event)" />
+
+  <section class="cabecera">
+    <div class="mes">
+      <h1>{{ nombreMes }}</h1>
+      <span class="anio">{{ anio }}</span>
+    </div>
+    <div class="flechas">
+      <button (click)="moverMes(-1)" aria-label="Mes anterior"><ion-icon name="chevron-back"></ion-icon></button>
+      <button (click)="moverMes(1)" aria-label="Mes siguiente"><ion-icon name="chevron-forward"></ion-icon></button>
+    </div>
+  </section>
+
+  <section class="calendario" (touchstart)="toqueInicio($event)" (touchend)="toqueFin($event)">
+    <div class="dias-semana">
+      <span *ngFor="let d of diasSemana">{{ d }}</span>
+    </div>
+    <div class="rejilla" [class.desde-derecha]="direccion === 1" [class.desde-izquierda]="direccion === -1">
+      <button *ngFor="let c of celdas; trackBy: porFecha"
+              class="dia"
+              [class.fuera]="!c.delMes"
+              [class.hoy]="c.fecha === hoy"
+              [class.pasado]="c.fecha < hoy"
+              [disabled]="!c.delMes"
+              (click)="abrirDia(c.fecha)"
+              [attr.aria-label]="c.etiqueta">
+        <span class="num">{{ c.numero }}</span>
+        <span class="punto" *ngIf="c.activo"></span>
+      </button>
+    </div>
+  </section>
+
+  <section class="pie">
+    <button class="ir-hoy" *ngIf="!esMesActual" (click)="irAHoy()">Volver a hoy</button>
+    <button class="abrir-hoy" (click)="abrirDia(hoy)">
+      <span class="fecha-hoy">{{ hoyLargo }}</span>
+      <span class="accion">Abrir mi día</span>
+    </button>
+    <p class="leyenda"><span class="punto"></span> Días en los que registraste algo</p>
+  </section>
+</ion-content>

@@ -1,6 +1,9 @@
-import { Component, ElementRef, ViewChild } from '@angular/core';
-import { Router } from '@angular/router';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
+import { DatosService } from '../services/datos.service';
+import { ServidorService } from '../services/servidor.service';
+import { registrarIconos } from '../services/iconos';
 
 @Component({
   selector: 'app-login',
@@ -8,187 +11,117 @@ import { AuthService } from '../services/auth.service';
   styleUrls: ['./login.page.scss'],
   standalone: false,
 })
-export class LoginPage {
-  @ViewChild('msform', { static: false })
-  msform?: ElementRef<HTMLFormElement>;
-
-  mode: 'login' | 'register' = 'login';
+export class LoginPage implements OnInit {
+  modo: 'login' | 'registro' = 'login';
+  /** IP:puerto de XAMPP donde están las APIs (se guarda en Preferences). */
+  servidor = '';
+  nombre = '';
+  email = '';
+  password = '';
+  password2 = '';
+  verPass = false;
   cargando = false;
-  mensaje = '';
+  error = '';
+  sacudir = false;
+  enLinea = navigator.onLine;
 
-  data = {
-    email: '',
-    password: '',
-    cpassword: '',
-    twitter: '',
-    facebook: '',
-    gplus: '',
-    fname: '',
-    lname: '',
-    phone: '',
-    address: '',
-  };
-
-  loginData = { email: '', password: '' };
-
-  private animating = false;
-
-  constructor(private auth: AuthService, private router: Router) {}
-
-  cambiarModo(m: 'login' | 'register'): void {
-    this.mode = m;
-    this.mensaje = '';
+  constructor(
+    private auth: AuthService,
+    private datos: DatosService,
+    private servidorSrv: ServidorService,
+    private router: Router,
+    private route: ActivatedRoute,
+    private cdr: ChangeDetectorRef,
+  ) {
+    registrarIconos();
   }
 
-  // ==================== INICIAR SESIÓN ====================
-  async login(): Promise<void> {
-    this.mensaje = '';
-    if (!this.loginData.email || !this.loginData.password) {
-      this.mensaje = 'Escribe tu email y contraseña.';
+  ngOnInit() {
+    window.addEventListener('online', () => { this.enLinea = true; this.refrescar(); });
+    window.addEventListener('offline', () => { this.enLinea = false; this.refrescar(); });
+    this.alEntrar();
+    this.cargarServidor();
+  }
+
+  /** Pone en el campo la IP que se guardó la última vez. */
+  private async cargarServidor() {
+    this.servidor = await this.servidorSrv.obtener();
+    this.refrescar();
+  }
+
+  // Se llama al crear la página y cada vez que vuelves a ella
+  ionViewWillEnter() {
+    this.alEntrar();
+  }
+
+  private alEntrar() {
+    // Si ya hay sesión guardada, no hay que volver a iniciar sesión
+    if (this.auth.estaLogueado()) {
+      this.router.navigateByUrl('/inicio', { replaceUrl: true });
       return;
     }
+    // Viene del botón "Crear cuenta nueva"
+    if (this.route.snapshot.queryParamMap.get('modo') === 'registro') {
+      this.modo = 'registro';
+    }
+  }
+
+  cambiarModo(m: 'login' | 'registro') {
+    this.modo = m;
+    this.error = '';
+  }
+
+  async enviar() {
+    this.error = '';
+    const email = this.email.trim().toLowerCase();
+
+    if (!/^\S+@\S+\.\S+$/.test(email)) return this.fallo('Escribe un correo válido, por ejemplo ana@correo.com.');
+    if (this.password.length < 6) return this.fallo('La contraseña debe tener al menos 6 caracteres.');
+    if (this.modo === 'registro') {
+      if (!this.nombre.trim()) return this.fallo('Escribe tu nombre.');
+      if (this.password !== this.password2) return this.fallo('Las contraseñas no coinciden.');
+    }
+
+    // Guardamos la IP antes de llamar a la API, así todas las pantallas la usan
+    if (!(await this.servidorSrv.guardar(this.servidor))) {
+      return this.fallo('Escribe la IP del servidor, por ejemplo 10.0.2.2:8080.');
+    }
+    this.servidor = await this.servidorSrv.obtener();
+
     this.cargando = true;
     try {
-      const res = await this.auth.login(
-        this.loginData.email,
-        this.loginData.password
-      );
-      if (res.ok) {
-        this.auth.guardarSesion(res.usuario);
-        this.router.navigateByUrl('/tabs/tab3', { replaceUrl: true });
-      } else {
-        this.mensaje = res.error || 'Credenciales incorrectas.';
+      if (this.modo === 'registro') {
+        const reg = await this.auth.registrar({ nombre: this.nombre.trim(), email, password: this.password });
+        if (!reg.ok) return this.fallo(reg.error || 'No se pudo crear la cuenta.');
       }
-    } catch {
-      this.mensaje = 'No se pudo conectar con el servidor.';
+      // Tras registrarse, inicia sesión solo
+      const res = await this.auth.login(email, this.password);
+      if (!res.ok) return this.fallo(res.error || 'Correo o contraseña incorrectos.');
+
+      this.limpiar();
+      this.datos.sincronizar();
+      this.router.navigateByUrl('/inicio', { replaceUrl: true });
     } finally {
       this.cargando = false;
+      this.refrescar();
     }
   }
 
-  // ==================== REGISTRAR ====================
-  async registrar(): Promise<void> {
-    this.mensaje = '';
-    if (!this.data.email || !this.data.password) {
-      this.mensaje = 'El email y la contraseña son obligatorios.';
-      return;
-    }
-    if (this.data.password !== this.data.cpassword) {
-      this.mensaje = 'Las contraseñas no coinciden.';
-      return;
-    }
-    this.cargando = true;
-    try {
-      const res = await this.auth.registrar(this.data);
-      if (!res.ok) {
-        this.mensaje = res.error || 'No se pudo registrar.';
-        return;
-      }
-      const login = await this.auth.login(this.data.email, this.data.password);
-      if (login.ok) {
-        this.auth.guardarSesion(login.usuario);
-        this.router.navigateByUrl('/tabs/tab3', { replaceUrl: true });
-      } else {
-        this.loginData.email = this.data.email;
-        this.cambiarModo('login');
-      }
-    } catch {
-      this.mensaje = 'No se pudo conectar con el servidor.';
-    } finally {
-      this.cargando = false;
-    }
+  /** Avisa a Angular que repinte la pantalla (necesario en Angular sin zone.js). */
+  private refrescar() {
+    this.cdr.markForCheck();
   }
 
-  // ==================== ANIMACIÓN MULTISTEP ====================
-  next(target: EventTarget | null): void {
-    if (this.animating || !target || !this.msform) return;
-    this.animating = true;
-
-    const currentFs = (target as HTMLElement).closest('fieldset') as HTMLElement;
-    const nextFs = currentFs.nextElementSibling as HTMLElement;
-
-    const fieldsets = Array.from(
-      this.msform.nativeElement.querySelectorAll<HTMLElement>('fieldset')
-    );
-    const bullets = this.msform.nativeElement.querySelectorAll('#progressbar li');
-    bullets[fieldsets.indexOf(nextFs)]?.classList.add('active');
-
-    nextFs.style.display = 'block';
-
-    this.animate(
-      800,
-      (now) => {
-        const scale = 1 - (1 - now) * 0.2;
-        const left = now * 50 + '%';
-        const opacity = 1 - now;
-        currentFs.style.transform = `scale(${scale})`;
-        currentFs.style.position = 'absolute';
-        nextFs.style.left = left;
-        nextFs.style.opacity = `${opacity}`;
-      },
-      () => {
-        currentFs.style.display = 'none';
-        this.animating = false;
-      }
-    );
+  private fallo(msg: string) {
+    this.error = msg;
+    this.sacudir = false;
+    this.refrescar();
+    requestAnimationFrame(() => { this.sacudir = true; this.refrescar(); });
+    setTimeout(() => { this.sacudir = false; this.refrescar(); }, 450);
   }
 
-  previous(target: EventTarget | null): void {
-    if (this.animating || !target || !this.msform) return;
-    this.animating = true;
-
-    const currentFs = (target as HTMLElement).closest('fieldset') as HTMLElement;
-    const previousFs = currentFs.previousElementSibling as HTMLElement;
-
-    const fieldsets = Array.from(
-      this.msform.nativeElement.querySelectorAll<HTMLElement>('fieldset')
-    );
-    const bullets = this.msform.nativeElement.querySelectorAll('#progressbar li');
-    bullets[fieldsets.indexOf(currentFs)]?.classList.remove('active');
-
-    previousFs.style.display = 'block';
-
-    this.animate(
-      800,
-      (now) => {
-        const scale = 0.8 + (1 - now) * 0.2;
-        const left = (1 - now) * 50 + '%';
-        const opacity = 1 - now;
-        currentFs.style.left = left;
-        previousFs.style.transform = `scale(${scale})`;
-        previousFs.style.opacity = `${opacity}`;
-      },
-      () => {
-        currentFs.style.display = 'none';
-        this.animating = false;
-      }
-    );
-  }
-
-  private animate(
-    duration: number,
-    step: (now: number) => void,
-    complete: () => void
-  ): void {
-    const start = performance.now();
-    const tick = (timestamp: number) => {
-      const progress = Math.min((timestamp - start) / duration, 1);
-      const now = 1 - this.easeInOutBack(progress);
-      step(now);
-      if (progress < 1) {
-        requestAnimationFrame(tick);
-      } else {
-        complete();
-      }
-    };
-    requestAnimationFrame(tick);
-  }
-
-  private easeInOutBack(x: number): number {
-    const c1 = 1.70158;
-    const c2 = c1 * 1.525;
-    return x < 0.5
-      ? (Math.pow(2 * x, 2) * ((c2 + 1) * 2 * x - c2)) / 2
-      : (Math.pow(2 * x - 2, 2) * ((c2 + 1) * (x * 2 - 2) + c2) + 2) / 2;
+  private limpiar() {
+    this.nombre = this.password = this.password2 = '';
+    this.error = '';
   }
 }

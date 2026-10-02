@@ -1,0 +1,92 @@
+.editor { --background: #1a0029; color: #fff; }
+
+.barra {
+  display: flex; align-items: center; gap: 12px;
+  max-width: 900px; margin: 0 auto;
+  padding: calc(14px + env(safe-area-inset-top)) 16px 6px;
+  h2 { flex: 1; margin: 0; text-align: center; font-size: 18px; font-weight: 800; }
+  button { border: 0; font: inherit; font-weight: 800; border-radius: 14px; padding: 10px 14px; }
+  .texto { background: none; color: var(--fh-rose); }
+  .usar { background: var(--fh-rose); color: var(--fh-amethyst); &:disabled { opacity: 0.5; } }
+}
+.ayuda { text-align: center; margin: 4px 16px 14px; font-size: 13px; color: var(--fh-taupe); }
+
+/* ---------- Foto completa + recuadro ---------- */
+.zona {
+  max-width: 900px; margin: 0 auto; padding: 0 16px;
+  display: flex; justify-content: center;
+}
+.lienzo {
+  position: relative;
+  touch-action: none;    /* el dedo mueve el recuadro, no la página */
+  user-select: none;
+  img { width: 100%; height: 100%; display: block; pointer-events: none; border-radius: 6px; }
+}
+.recorte {
+  position: absolute;
+  cursor: move;
+  border: 2px solid #fff;
+  /* Oscurece todo lo que queda FUERA del recuadro */
+  box-shadow: 0 0 0 9999px rgba(20, 0, 32, 0.6);
+  /* Líneas guía en tercios */
+  background:
+    linear-gradient(90deg, transparent calc(33.33% - 0.5px), rgba(255,255,255,.45) 33.33%, transparent calc(33.33% + 0.5px),
+                           transparent calc(66.66% - 0.5px), rgba(255,255,255,.45) 66.66%, transparent calc(66.66% + 0.5px)),
+    linear-gradient(0deg,  transparent calc(33.33% - 0.5px), rgba(255,255,255,.45) 33.33%, transparent calc(33.33% + 0.5px),
+                           transparent calc(66.66% - 0.5px), rgba(255,255,255,.45) 66.66%, transparent calc(66.66% + 0.5px));
+}
+.lienzo { overflow: hidden; border-radius: 6px; }
+/* Esquinas en forma de "L", como en los editores de fotos */
+.esquina {
+  position: absolute;
+  width: 26px; height: 26px;
+  border: 0 solid #fff;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.6));
+  /* Zona para tocar más grande que la esquina */
+  &::before { content: ''; position: absolute; inset: -12px; }
+  &.nw { left: -3px; top: -3px; border-top-width: 5px; border-left-width: 5px; cursor: nwse-resize; }
+  &.ne { right: -3px; top: -3px; border-top-width: 5px; border-right-width: 5px; cursor: nesw-resize; }
+  &.sw { left: -3px; bottom: -3px; border-bottom-width: 5px; border-left-width: 5px; cursor: nesw-resize; }
+  &.se { right: -3px; bottom: -3px; border-bottom-width: 5px; border-right-width: 5px; cursor: nwse-resize; }
+}
+
+/* ---------- Vista previa y controles ---------- */
+.abajo {
+  max-width: 900px; margin: 20px auto 40px; padding: 0 20px;
+  display: grid; gap: 20px;
+  grid-template-columns: minmax(0, 260px) 1fr;
+  align-items: start;
+}
+@media (max-width: 600px) { .abajo { grid-template-columns: 1fr; } }
+
+.etiqueta { display: block; font-size: 14px; font-weight: 700; color: var(--fh-rose); margin-bottom: 8px; }
+.mini {
+  position: relative; overflow: hidden;
+  width: 100%; max-height: 260px;
+  border-radius: 14px;
+  background-color: var(--fh-paper);
+  background-repeat: no-repeat;
+  box-shadow: 0 0 0 2px var(--fh-rose);
+}
+.capa { position: absolute; inset: 0; background: var(--fh-paper); }
+.fantasma {
+  position: absolute; inset: 18% 10% 14%;
+  display: grid; grid-template-columns: repeat(7, 1fr); gap: 5%;
+  span { border-radius: 22%; background: rgba(255, 255, 255, 0.55); box-shadow: inset 0 0 0 1px rgba(226, 194, 198, 0.9); }
+  span:nth-child(24) { background: var(--fh-indigo); box-shadow: none; }
+}
+
+.controles {
+  display: grid; gap: 18px;
+  label { display: block; }
+  .fila { display: flex; align-items: center; gap: 12px; }
+  .fila > ion-icon { font-size: 22px; color: var(--fh-taupe); flex-shrink: 0; }
+  input[type='range'] { flex: 1; accent-color: var(--fh-rose); height: 28px; }
+}
+.centrar {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 12px; border: 1.5px solid rgba(226, 194, 198, 0.4); border-radius: 16px;
+  background: none; color: var(--fh-rose); font: inherit; font-weight: 700;
+  ion-icon { font-size: 20px; }
+}
+button:focus-visible, input:focus-visible { outline: 2px solid var(--fh-rose); outline-offset: 2px; }

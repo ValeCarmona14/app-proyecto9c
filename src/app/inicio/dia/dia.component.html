@@ -1,0 +1,121 @@
+<ion-content class="hoja">
+  <header class="encabezado">
+    <button *ngIf="vista !== 'tarjetas'" class="atras" (click)="volver()" aria-label="Volver a las tarjetas">
+      <ion-icon name="arrow-back"></ion-icon>
+    </button>
+    <div class="titulo">
+      <p class="semana">{{ esHoy ? 'Hoy, ' + diaSemana : diaSemana }}</p>
+      <h2>{{ diaNumero }} de {{ mesNombre }}</h2>
+    </div>
+    <button class="cerrar" (click)="cerrar()" aria-label="Cerrar"><ion-icon name="close"></ion-icon></button>
+  </header>
+
+  <!-- ===================== LAS 4 TARJETAS ===================== -->
+  <div *ngIf="vista === 'tarjetas'" class="tarjetas">
+    <button class="t t-habitos" (click)="abrir('habitos')" style="--i: 0">
+      <div class="ico"><ion-icon name="checkmark-done-outline"></ion-icon></div>
+      <strong>Hábitos</strong>
+      <span>{{ hechosCount }} de {{ habitos.length }} cumplidos</span>
+      <div class="barrita"><div [style.width.%]="porcentaje"></div></div>
+    </button>
+
+    <button class="t t-entreno" (click)="abrir('entreno')" style="--i: 1">
+      <div class="ico"><ion-icon name="barbell-outline"></ion-icon></div>
+      <strong>Entrenamiento</strong>
+      <span>{{ ejercicios.length ? ejercicios.length + ' ejercicio(s), ' + volumen + ' kg' : 'Sin registrar' }}</span>
+    </button>
+
+    <button class="t t-diario" (click)="abrir('diario')" style="--i: 2">
+      <div class="ico"><ion-icon name="create-outline"></ion-icon></div>
+      <strong>Diario</strong>
+      <span>{{ diario.animo ? diario.animo + ' ' : '' }}{{ palabras ? palabras + ' palabras' : 'Escribe cómo te fue' }}</span>
+    </button>
+
+    <button class="t t-frase" (click)="abrir('frase')" style="--i: 3">
+      <div class="ico"><ion-icon name="sparkles-outline"></ion-icon></div>
+      <strong>{{ frase.tipo === 'biblia' ? 'Versículo' : 'Frase' }} del día</strong>
+      <span class="cita">“{{ frase.texto }}”</span>
+    </button>
+  </div>
+
+  <!-- ===================== HÁBITOS ===================== -->
+  <section *ngIf="vista === 'habitos'" class="panel">
+    <div class="progreso">
+      <div class="barra-grande"><div [style.width.%]="porcentaje"></div></div>
+      <span>{{ porcentaje }}%</span>
+    </div>
+
+    <ul class="lista-habitos">
+      <li *ngFor="let h of habitos; trackBy: porId" [class.hecho]="hechos[h.id]">
+        <button class="check" (click)="alternarHabito(h.id)" [attr.aria-pressed]="!!hechos[h.id]">
+          <span class="circulo"><ion-icon name="checkmark"></ion-icon></span>
+          <ion-icon class="icono" [name]="h.icono"></ion-icon>
+          <span class="nombre">{{ h.nombre }}</span>
+        </button>
+        <button *ngIf="editando" class="borrar" (click)="borrarHabito(h.id)" [attr.aria-label]="'Borrar ' + h.nombre">
+          <ion-icon name="trash-outline"></ion-icon>
+        </button>
+      </li>
+    </ul>
+
+    <form *ngIf="editando" class="agregar" (ngSubmit)="agregarHabito()">
+      <input name="nuevo" [(ngModel)]="nuevoHabito" placeholder="Nuevo hábito, p. ej. Meditar 5 min" />
+      <button type="submit" [disabled]="!nuevoHabito.trim()">Agregar</button>
+    </form>
+    <button class="secundario" (click)="editando = !editando">
+      {{ editando ? 'Listo' : 'Editar mis hábitos' }}
+    </button>
+  </section>
+
+  <!-- ===================== ENTRENAMIENTO ===================== -->
+  <section *ngIf="vista === 'entreno'" class="panel">
+    <form class="form-ejercicio" (ngSubmit)="agregarEjercicio()">
+      <label class="completo">
+        <span>Ejercicio</span>
+        <input name="ej" [(ngModel)]="nuevoEj.nombre" placeholder="Sentadilla, press banca…" />
+      </label>
+      <label><span>Series</span><input name="s" type="number" inputmode="numeric" min="1" [(ngModel)]="nuevoEj.series" /></label>
+      <label><span>Reps</span><input name="r" type="number" inputmode="numeric" min="1" [(ngModel)]="nuevoEj.reps" /></label>
+      <label><span>Kg</span><input name="k" type="number" inputmode="decimal" min="0" step="0.5" [(ngModel)]="nuevoEj.kg" /></label>
+      <button type="submit" class="completo" [disabled]="!nuevoEj.nombre.trim()">Agregar ejercicio</button>
+    </form>
+
+    <p *ngIf="!ejercicios.length" class="vacio">Agrega tu primer ejercicio de hoy arriba.</p>
+
+    <ul class="lista-ej" *ngIf="ejercicios.length">
+      <li *ngFor="let e of ejercicios; trackBy: porId">
+        <div>
+          <strong>{{ e.nombre }}</strong>
+          <span>{{ e.series }} × {{ e.reps }} con {{ e.kg }} kg</span>
+        </div>
+        <button (click)="borrarEjercicio(e.id)" [attr.aria-label]="'Borrar ' + e.nombre">
+          <ion-icon name="trash-outline"></ion-icon>
+        </button>
+      </li>
+    </ul>
+    <p *ngIf="ejercicios.length" class="total">Volumen total: <strong>{{ volumen }} kg</strong></p>
+  </section>
+
+  <!-- ===================== DIARIO ===================== -->
+  <section *ngIf="vista === 'diario'" class="panel">
+    <p class="pregunta">¿Cómo te sentiste?</p>
+    <div class="animos">
+      <button *ngFor="let a of animos" [class.elegido]="diario.animo === a.emoji"
+              (click)="elegirAnimo(a.emoji)" [attr.aria-label]="a.nombre">
+        <span>{{ a.emoji }}</span><small>{{ a.nombre }}</small>
+      </button>
+    </div>
+    <textarea [(ngModel)]="diario.texto" (ngModelChange)="escribirDiario()"
+              placeholder="¿Qué pasó hoy? ¿Qué aprendiste? ¿Por qué das gracias?" rows="9"></textarea>
+    <p class="guardado">{{ guardandoDiario ? 'Guardando…' : 'Se guarda solo, aunque no tengas internet.' }}</p>
+  </section>
+
+  <!-- ===================== FRASE ===================== -->
+  <section *ngIf="vista === 'frase'" class="panel panel-frase">
+    <blockquote [class.cambio]="animarFrase">
+      <p>“{{ frase.texto }}”</p>
+      <cite>{{ frase.fuente }}</cite>
+    </blockquote>
+    <button class="secundario" (click)="otraFrase()">Otra frase</button>
+  </section>
+</ion-content>
