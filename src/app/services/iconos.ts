@@ -1,10 +1,11 @@
 import { addIcons } from 'ionicons';
 import {
+  alertCircleOutline, checkmarkCircleOutline, copyOutline, refreshOutline, saveOutline, serverOutline,
   arrowBack, barbellOutline, bookOutline, checkmark, checkmarkDoneOutline,
   chevronBack, chevronForward, close, cloudDoneOutline, cloudOfflineOutline,
   cloudUploadOutline, createOutline, ellipseOutline, eyeOffOutline, eyeOutline, imageOutline,
   logOutOutline, moonOutline, personAddOutline, personCircleOutline,
-  sparklesOutline, syncOutline, trashOutline, walkOutline, waterOutline,
+  sparklesOutline, statsChartOutline, syncOutline, trashOutline, walkOutline, waterOutline,
 } from 'ionicons/icons';
 
 /**
@@ -13,6 +14,12 @@ import {
  */
 export function registrarIconos() {
   addIcons({
+    'alert-circle-outline': alertCircleOutline,
+    'checkmark-circle-outline': checkmarkCircleOutline,
+    'copy-outline': copyOutline,
+    'refresh-outline': refreshOutline,
+    'save-outline': saveOutline,
+    'server-outline': serverOutline,
     'arrow-back': arrowBack,
     'barbell-outline': barbellOutline,
     'book-outline': bookOutline,
@@ -34,6 +41,7 @@ export function registrarIconos() {
     'person-add-outline': personAddOutline,
     'person-circle-outline': personCircleOutline,
     'sparkles-outline': sparklesOutline,
+    'stats-chart-outline': statsChartOutline,
     'sync-outline': syncOutline,
     'trash-outline': trashOutline,
     'walk-outline': walkOutline,

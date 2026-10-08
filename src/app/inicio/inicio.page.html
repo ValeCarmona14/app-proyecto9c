@@ -4,11 +4,15 @@
       <p>Hola{{ nombre ? ', ' + nombre : '' }}</p>
     </div>
     <ion-buttons slot="end">
-      <button class="estado" [ngClass]="estado" (click)="sincronizarAhora()"
-              [attr.aria-label]="textoEstado[estado]">
-        <ion-icon [name]="iconoEstado[estado]"></ion-icon>
-        <span>{{ textoEstado[estado] }}</span>
+      <button class="estado" [ngClass]="errorSync && estado !== 'sincronizando' ? 'con-error' : estado"
+              (click)="sincronizarAhora()"
+              [attr.aria-label]="errorSync ? 'Error al sincronizar, ver detalle' : textoEstado[estado]">
+        <ion-icon [name]="errorSync && estado !== 'sincronizando' ? 'alert-circle-outline' : iconoEstado[estado]"></ion-icon>
+        <span>{{ errorSync && estado !== 'sincronizando' ? 'Error · ver' : textoEstado[estado] }}</span>
       </button>
+      <ion-button routerLink="/progreso" aria-label="Ver mi progreso">
+        <ion-icon slot="icon-only" name="stats-chart-outline"></ion-icon>
+      </ion-button>
       <ion-button (click)="abrirCuenta()" aria-label="Cuenta">
         <ion-icon slot="icon-only" name="person-circle-outline"></ion-icon>
       </ion-button>

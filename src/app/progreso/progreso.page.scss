@@ -1,0 +1,77 @@
+:host { --ancho: min(94vw, 780px); }
+
+ion-content { --background: var(--fh-paper); --color: var(--fh-amethyst); }
+
+.barra {
+  --background: var(--fh-paper);
+  --color: var(--fh-indigo);
+  padding: 0 8px;
+}
+
+/* Mismo estilo de título grande que el nombre del mes en el calendario */
+.titulo {
+  max-width: var(--ancho);
+  margin: 4px auto 0;
+  padding: 0 20px;
+  h1 {
+    margin: 0;
+    font-size: clamp(48px, 13vw, 96px);
+    line-height: 0.9;
+    font-weight: 900;
+    letter-spacing: -0.05em;
+    color: var(--fh-amethyst);
+  }
+  p { margin: 8px 0 0; font-size: clamp(16px, 2.2vw, 20px); font-weight: 700; color: var(--fh-mauve); }
+}
+
+.bloque {
+  max-width: var(--ancho);
+  margin: 28px auto 0;
+  padding: 0 20px;
+
+  & + .bloque { padding-top: 24px; border-top: 2px solid var(--fh-rose); }
+  &:last-child { padding-bottom: 40px; }
+
+  header { margin-bottom: 12px; }
+  h2 { margin: 0; font-size: 24px; font-weight: 900; letter-spacing: -0.02em; color: var(--fh-amethyst); }
+  header p { margin: 4px 0 0; font-size: 14px; color: var(--fh-taupe); }
+  strong { color: var(--fh-indigo); font-weight: 900; }
+}
+
+ion-segment {
+  --background: rgba(226, 194, 198, 0.45);
+  margin-bottom: 12px;
+  max-width: 320px;
+}
+ion-segment-button {
+  --indicator-color: #ffffff;
+  --color: var(--fh-grape);
+  --color-checked: var(--fh-indigo);
+  font-weight: 700;
+  text-transform: none;
+}
+
+.vacio {
+  margin: 8px 0 0;
+  padding: 20px;
+  border-radius: 18px;
+  background: rgba(226, 194, 198, 0.35);
+  color: var(--fh-grape);
+  font-weight: 600;
+  line-height: 1.45;
+}
+
+.leyenda {
+  list-style: none;
+  margin: 16px auto 0;
+  padding: 0;
+  max-width: 420px;
+  li {
+    display: flex; align-items: center; gap: 10px;
+    padding: 9px 0;
+    & + li { border-top: 1px solid rgba(226, 194, 198, 0.7); }
+  }
+  .color { width: 14px; height: 14px; border-radius: 5px; flex: none; }
+  .nombre { flex: 1; font-weight: 600; }
+  .dias { font-weight: 900; color: var(--fh-indigo); }
+}

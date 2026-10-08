@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../services/auth.service';
 import { DatosService } from '../services/datos.service';
 import { ServidorService } from '../services/servidor.service';
+import { RegistroPeticion } from '../services/peticion.model';
 import { registrarIconos } from '../services/iconos';
 
 @Component({
@@ -15,6 +16,8 @@ export class LoginPage implements OnInit {
   modo: 'login' | 'registro' = 'login';
   /** IP:puerto de XAMPP donde están las APIs (se guarda en Preferences). */
   servidor = '';
+  /** Log de la última petición fallida: payload, IP destino y cabeceras. */
+  registro: RegistroPeticion | null = null;
   nombre = '';
   email = '';
   password = '';
@@ -52,6 +55,7 @@ export class LoginPage implements OnInit {
   // Se llama al crear la página y cada vez que vuelves a ella
   ionViewWillEnter() {
     this.alEntrar();
+    this.cargarServidor(); // por si lo cambiaste en "Origen de datos"
   }
 
   private alEntrar() {
@@ -69,10 +73,16 @@ export class LoginPage implements OnInit {
   cambiarModo(m: 'login' | 'registro') {
     this.modo = m;
     this.error = '';
+    this.registro = null;
+  }
+
+  abrirOrigenDatos() {
+    this.router.navigateByUrl('/origen-datos');
   }
 
   async enviar() {
     this.error = '';
+    this.registro = null;
     const email = this.email.trim().toLowerCase();
 
     if (!/^\S+@\S+\.\S+$/.test(email)) return this.fallo('Escribe un correo válido, por ejemplo ana@correo.com.');
@@ -92,11 +102,17 @@ export class LoginPage implements OnInit {
     try {
       if (this.modo === 'registro') {
         const reg = await this.auth.registrar({ nombre: this.nombre.trim(), email, password: this.password });
-        if (!reg.ok) return this.fallo(reg.error || 'No se pudo crear la cuenta.');
+        if (!reg.ok) {
+          this.registro = reg.registro ?? null;
+          return this.fallo(reg.error || 'No se pudo crear la cuenta.');
+        }
       }
       // Tras registrarse, inicia sesión solo
       const res = await this.auth.login(email, this.password);
-      if (!res.ok) return this.fallo(res.error || 'Correo o contraseña incorrectos.');
+      if (!res.ok) {
+        this.registro = res.registro ?? null;
+        return this.fallo(res.error || 'Correo o contraseña incorrectos.');
+      }
 
       this.limpiar();
       this.datos.sincronizar();
@@ -123,5 +139,6 @@ export class LoginPage implements OnInit {
   private limpiar() {
     this.nombre = this.password = this.password2 = '';
     this.error = '';
+    this.registro = null;
   }
 }

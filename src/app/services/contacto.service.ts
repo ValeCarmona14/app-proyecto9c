@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
-import axios from 'axios';
-import { ServidorService } from './servidor.service';
+import { HttpService } from './http.service';
 
 export interface Contacto {
   id?: number;
@@ -24,46 +23,36 @@ export class ContactoService {
   /** Un solo endpoint que enruta por método HTTP (GET/POST/PUT/PATCH/DELETE). */
   private readonly RUTA = 'login_api/login_api.php';
 
-  constructor(private servidor: ServidorService) {}
-
-  /** URL de la API usando la IP guardada en el login. */
-  private api(): Promise<string> {
-    return this.servidor.url(this.RUTA);
-  }
+  /** Usa HttpService: la IP sale de "Origen de datos" y cada petición queda registrada. */
+  constructor(private http: HttpService) {}
 
   /** GET -> lista todos */
   async listar(): Promise<ApiResp> {
-    const res = await axios.get<ApiResp>(await this.api());
-    return res.data;
+    return (await this.http.peticion<ApiResp>('get', this.RUTA)).data;
   }
 
   /** GET ?id= -> uno solo */
   async obtener(id: number): Promise<ApiResp> {
-    const res = await axios.get<ApiResp>(`${await this.api()}?id=${id}`);
-    return res.data;
+    return (await this.http.peticion<ApiResp>('get', `${this.RUTA}?id=${id}`)).data;
   }
 
   /** POST -> crear */
   async crear(c: Contacto): Promise<ApiResp> {
-    const res = await axios.post<ApiResp>(await this.api(), c);
-    return res.data;
+    return (await this.http.peticion<ApiResp>('post', this.RUTA, c)).data;
   }
 
   /** PUT ?id= -> actualización completa */
   async actualizar(id: number, c: Contacto): Promise<ApiResp> {
-    const res = await axios.put<ApiResp>(`${await this.api()}?id=${id}`, c);
-    return res.data;
+    return (await this.http.peticion<ApiResp>('put', `${this.RUTA}?id=${id}`, c)).data;
   }
 
   /** PATCH ?id= -> actualización parcial */
   async actualizarParcial(id: number, cambios: Partial<Contacto>): Promise<ApiResp> {
-    const res = await axios.patch<ApiResp>(`${await this.api()}?id=${id}`, cambios);
-    return res.data;
+    return (await this.http.peticion<ApiResp>('patch', `${this.RUTA}?id=${id}`, cambios)).data;
   }
 
   /** DELETE ?id= -> eliminar */
   async eliminar(id: number): Promise<ApiResp> {
-    const res = await axios.delete<ApiResp>(`${await this.api()}?id=${id}`);
-    return res.data;
+    return (await this.http.peticion<ApiResp>('delete', `${this.RUTA}?id=${id}`)).data;
   }
 }

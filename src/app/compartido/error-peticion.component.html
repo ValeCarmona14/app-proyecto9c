@@ -1,0 +1,24 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>{{ titulo }}</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="cerrar()" aria-label="Cerrar">
+        <ion-icon slot="icon-only" name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <app-registro-peticion *ngIf="registro" [registro]="registro" titulo="Detalle de la petición"></app-registro-peticion>
+  <p *ngIf="!registro" class="vacio">Todavía no hay peticiones registradas.</p>
+
+  <div class="acciones">
+    <button *ngIf="puedeReintentar" class="principal" (click)="cerrar('reintentar')">
+      <ion-icon name="refresh-outline"></ion-icon> Reintentar
+    </button>
+    <button class="secundario" (click)="cerrar('origen')">
+      <ion-icon name="server-outline"></ion-icon> Origen de datos
+    </button>
+  </div>
+</ion-content>

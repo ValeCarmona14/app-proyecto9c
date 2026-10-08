@@ -1,0 +1,37 @@
+<section class="log" *ngIf="registro" [class.ok]="registro.exito" [class.mal]="!registro.exito">
+  <header>
+    <ion-icon [name]="registro.exito ? 'checkmark-circle-outline' : 'alert-circle-outline'"></ion-icon>
+    <div>
+      <strong>{{ titulo }}</strong>
+      <small>{{ hora }} · {{ registro.duracionMs }} ms</small>
+    </div>
+    <button type="button" class="copiar" (click)="copiar()" aria-label="Copiar log">
+      <ion-icon name="copy-outline"></ion-icon>{{ copiado ? 'Copiado' : 'Copiar' }}
+    </button>
+  </header>
+
+  <p class="mensaje">{{ registro.mensaje }}</p>
+
+  <h4>Destino</h4>
+  <dl>
+    <dt>Método</dt><dd>{{ registro.metodo }}</dd>
+    <dt>URL</dt><dd class="url">{{ registro.url }}</dd>
+    <dt>IP destino</dt><dd>{{ registro.destino.ip }}</dd>
+    <dt>Protocolo</dt><dd>{{ registro.destino.protocolo }}</dd>
+    <dt>Puerto API</dt><dd>{{ registro.destino.puertoApi }}</dd>
+    <dt>Puerto BD</dt><dd>{{ registro.destino.puertoBd }} (MySQL)</dd>
+    <dt>Estado HTTP</dt><dd>{{ registro.estadoHttp ?? 'Sin respuesta' }}</dd>
+  </dl>
+
+  <h4>Cabeceras enviadas</h4>
+  <pre>{{ json(registro.cabecerasEnviadas) }}</pre>
+
+  <h4>Payload</h4>
+  <pre>{{ json(registro.payload) }}</pre>
+
+  <h4>Cabeceras de respuesta</h4>
+  <pre>{{ registro.cabecerasRespuesta ? json(registro.cabecerasRespuesta) : '(no hubo respuesta)' }}</pre>
+
+  <h4>Respuesta del servidor</h4>
+  <pre>{{ json(registro.respuesta) }}</pre>
+</section>

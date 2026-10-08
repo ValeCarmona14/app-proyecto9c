@@ -7,6 +7,9 @@ import { DatosService, EstadoSync } from '../services/datos.service';
 import { DiaComponent } from './dia/dia.component';
 import { aISO } from '../services/utiles';
 import { registrarIconos } from '../services/iconos';
+import { RegistroPeticion } from '../services/peticion.model';
+import { ServidorService } from '../services/servidor.service';
+import { ErrorPeticionComponent } from '../compartido/error-peticion.component';
 
 interface Celda {
   fecha: string;
@@ -35,6 +38,9 @@ export class InicioPage implements OnInit, OnDestroy {
   estado: EstadoSync = 'al-dia';
   fondo: string | null = null;
   fondoCss: string | null = null;
+  /** Detalle de la última sincronización fallida (cabeceras, payload, IP destino). */
+  errorSync: RegistroPeticion | null = null;
+  private modalErrorAbierta = false;
   @ViewChild('archivo') archivo!: ElementRef<HTMLInputElement>;
 
   readonly textoEstado: Record<EstadoSync, string> = {
@@ -62,12 +68,14 @@ export class InicioPage implements OnInit, OnDestroy {
     private router: Router,
     private cdr: ChangeDetectorRef,
     private toastCtrl: ToastController,
+    private origen: ServidorService,
   ) {
     registrarIconos();
   }
 
   ngOnInit() {
     this.subs.push(this.datos.estado$.subscribe(e => { this.estado = e; this.cdr.markForCheck(); }));
+    this.subs.push(this.datos.error$.subscribe(r => { this.errorSync = r; this.cdr.markForCheck(); }));
     this.subs.push(this.datos.cambios$.subscribe(() => { this.armarMes(); this.cdr.markForCheck(); }));
     this.alEntrar();
   }
@@ -165,8 +173,37 @@ export class InicioPage implements OnInit, OnDestroy {
     this.cdr.markForCheck();
   }
 
-  sincronizarAhora() {
-    this.datos.sincronizar();
+  /** Toque en el chip de estado: si hubo error muestra el detalle; si no, sincroniza. */
+  async sincronizarAhora() {
+    if (this.errorSync) return this.abrirError(this.errorSync);
+    await this.datos.sincronizar();
+    if (this.errorSync) this.abrirError(this.errorSync);
+  }
+
+  /** Modal con todos los datos de la petición: IP destino, cabeceras, payload y respuesta. */
+  async abrirError(registro: RegistroPeticion | null, titulo = 'Error al sincronizar', puedeReintentar = true) {
+    if (this.modalErrorAbierta) return;
+    this.modalErrorAbierta = true;
+    const modal = await this.modalCtrl.create({
+      component: ErrorPeticionComponent,
+      componentProps: { registro, titulo, puedeReintentar },
+    });
+    await modal.present();
+    const { role } = await modal.onDidDismiss();
+    this.modalErrorAbierta = false;
+
+    if (role === 'reintentar') {
+      await this.datos.sincronizar();
+      if (this.errorSync) this.abrirError(this.errorSync);
+      else this.aviso('¡Listo! Ya se sincronizó.');
+    } else if (role === 'origen') {
+      this.router.navigateByUrl('/origen-datos');
+    }
+  }
+
+  async verUltimaPeticion() {
+    const { ultimaPeticion } = await this.origen.leer();
+    this.abrirError(ultimaPeticion, 'Última petición', false);
   }
 
   async abrirCuenta() {
@@ -181,6 +218,8 @@ export class InicioPage implements OnInit, OnDestroy {
         ...(this.fondo
           ? [{ text: 'Quitar foto de fondo', icon: 'trash-outline', handler: () => this.quitarFondo() }]
           : []),
+        { text: 'Origen de datos', icon: 'server-outline', handler: () => { this.router.navigateByUrl('/origen-datos'); } },
+        { text: 'Ver última petición', icon: 'alert-circle-outline', handler: () => { this.verUltimaPeticion(); } },
         { text: 'Crear cuenta nueva', icon: 'person-add-outline', handler: () => this.salir(true) },
         { text: 'Cerrar sesión', icon: 'log-out-outline', role: 'destructive', handler: () => this.salir(false) },
         { text: 'Cancelar', role: 'cancel' },

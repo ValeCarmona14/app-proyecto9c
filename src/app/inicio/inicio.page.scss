@@ -32,6 +32,7 @@ ion-content { --background: var(--fh-paper); --color: var(--fh-amethyst); }
   &.sincronizando ion-icon { animation: girar 1s linear infinite; }
   &.sin-conexion { background: rgba(47, 1, 71, 0.08); color: var(--fh-taupe); }
   &.pendiente { background: rgba(226, 194, 198, 0.6); color: var(--fh-indigo-deep); }
+  &.con-error { background: rgba(192, 51, 77, 0.14); color: #c0334d; }
 }
 @keyframes girar { to { transform: rotate(360deg); } }
 ion-buttons ion-button { --color: var(--fh-indigo); font-size: 18px; }

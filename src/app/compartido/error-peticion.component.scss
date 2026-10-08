@@ -1,0 +1,10 @@
+ion-toolbar { --background: var(--fh-amethyst); --color: #fff; }
+ion-content { --background: var(--fh-paper); --color: var(--fh-amethyst); }
+.vacio { text-align: center; color: var(--fh-taupe); }
+.acciones { display: flex; gap: 10px; margin: 8px 0 24px; }
+.acciones button {
+  flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px;
+  padding: 14px; border: 0; border-radius: 16px; font: inherit; font-weight: 700;
+}
+.principal { background: var(--fh-indigo); color: #fff; }
+.secundario { background: var(--fh-rose); color: var(--fh-amethyst); }

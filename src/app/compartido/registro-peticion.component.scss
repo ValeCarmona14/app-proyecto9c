@@ -1,0 +1,31 @@
+:host { display: block; }
+.log {
+  margin: 8px 0 14px; padding: 12px; border-radius: 16px; font-size: 13px;
+  background: rgba(127, 127, 127, 0.12); border: 1.5px solid rgba(127, 127, 127, 0.25);
+  &.mal { border-color: rgba(220, 70, 90, 0.6); }
+  &.ok { border-color: rgba(60, 170, 110, 0.6); }
+}
+header {
+  display: flex; align-items: center; gap: 8px;
+  > ion-icon { font-size: 22px; flex-shrink: 0; }
+  div { flex: 1; min-width: 0; }
+  strong, small { display: block; }
+  small { opacity: 0.75; font-size: 11px; }
+}
+.mal header > ion-icon { color: #e0566b; }
+.ok header > ion-icon { color: #3caa6e; }
+.copiar {
+  display: flex; align-items: center; gap: 4px; padding: 6px 10px;
+  border: 0; border-radius: 10px; background: rgba(127, 127, 127, 0.2);
+  color: inherit; font: inherit; font-size: 12px;
+}
+.mensaje { margin: 10px 0 4px; line-height: 1.4; font-weight: 600; }
+h4 { margin: 12px 0 4px; font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; opacity: 0.8; }
+dl { display: grid; grid-template-columns: auto 1fr; gap: 3px 10px; margin: 0; }
+dt { opacity: 0.75; }
+dd { margin: 0; font-family: monospace; word-break: break-all; }
+pre {
+  margin: 0; padding: 8px 10px; max-height: 180px; overflow: auto;
+  border-radius: 10px; background: rgba(0, 0, 0, 0.25); color: inherit;
+  font-size: 12px; white-space: pre-wrap; word-break: break-all;
+}

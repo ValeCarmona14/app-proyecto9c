@@ -14,6 +14,17 @@ const routes: Routes = [
     canActivate: [AuthGuard],
     loadChildren: () => import('./inicio/inicio.module').then(m => m.InicioPageModule),
   },
+  // Progreso: las 3 gráficas hechas con D3.js
+  {
+    path: 'progreso',
+    canActivate: [AuthGuard],
+    loadChildren: () => import('./progreso/progreso.module').then(m => m.ProgresoPageModule),
+  },
+  // Origen de datos: se puede abrir desde el login (sin sesión) y desde el inicio
+  {
+    path: 'origen-datos',
+    loadChildren: () => import('./origen-datos/origen-datos.module').then(m => m.OrigenDatosPageModule),
+  },
   // Cualquier ruta vieja (como /tabs/tab1) cae al inicio
   { path: '**', redirectTo: 'inicio' },
 ];

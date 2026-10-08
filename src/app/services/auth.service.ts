@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import axios from 'axios';
-import { ServidorService } from './servidor.service';
+import { HttpService } from './http.service';
+import { PeticionError, RegistroPeticion } from './peticion.model';
 
 /** Respuesta genérica de la API */
 export interface ApiResp {
@@ -8,6 +8,8 @@ export interface ApiResp {
   error?: string;
   usuario?: any;
   id?: number;
+  /** Detalle de la petición (cabeceras, payload, IP destino) para el log de error. */
+  registro?: RegistroPeticion;
 }
 
 /**
@@ -21,15 +23,10 @@ export interface ApiResp {
  */
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  /** Carpeta de la API dentro de XAMPP (htdocs). La IP sale de ServidorService. */
-  private readonly CARPETA_API = 'tab1_api';
+  /** Carpeta de la API dentro de XAMPP (htdocs). */
+  readonly CARPETA_API = 'tab1_api';
 
-  constructor(private servidor: ServidorService) {}
-
-  /** URL completa de un archivo de la API, usando la IP guardada en el login. */
-  async apiUrl(archivo: string): Promise<string> {
-    return this.servidor.url(`${this.CARPETA_API}/${archivo}`);
-  }
+  constructor(private http: HttpService) {}
 
   // ==================== LOGIN / REGISTRO ====================
 
@@ -39,34 +36,42 @@ export class AuthService {
       return { ok: false, error: 'Para crear una cuenta necesitas conexión a internet.' };
     }
     try {
-      const res = await axios.post<ApiResp>(await this.apiUrl('register.php'), data, { timeout: 8000 });
-      return res.data;
-    } catch {
-      return { ok: false, error: 'No se pudo conectar con el servidor. Revisa que XAMPP esté encendido.' };
+      const { data: resp, registro } = await this.http.peticion<ApiResp>('post', `${this.CARPETA_API}/register.php`, data);
+      return { ...resp, registro };
+    } catch (e) {
+      const registro = e instanceof PeticionError ? e.registro : undefined;
+      return { ok: false, error: registro?.mensaje ?? 'No se pudo conectar con el servidor.', registro };
     }
   }
 
   /**
    * Inicia sesión. Con internet pregunta al servidor; sin internet
    * (o si el servidor no responde) usa las credenciales guardadas.
+   * Siempre regresa el "registro" de la petición para el log de error.
    */
   async login(email: string, password: string): Promise<ApiResp> {
     email = email.trim().toLowerCase();
+    let registroFallido: RegistroPeticion | undefined;
 
     if (navigator.onLine) {
       try {
-        const res = await axios.post<ApiResp>(await this.apiUrl('login.php'), { email, password }, { timeout: 8000 });
-        if (res.data.ok) {
-          const usuario = res.data.usuario ?? { email };
+        const { data, registro } = await this.http.peticion<ApiResp>('post', `${this.CARPETA_API}/login.php`, { email, password });
+        if (data.ok) {
+          const usuario = data.usuario ?? { email };
           await this.recordarCredenciales(email, password, usuario);
           this.guardarSesion(usuario);
         }
-        return res.data;
-      } catch {
-        // El servidor no respondió: intentamos modo sin conexión
+        return { ...data, registro };
+      } catch (e) {
+        // El servidor no respondió: guardamos el detalle e intentamos modo sin conexión
+        registroFallido = e instanceof PeticionError ? e.registro : undefined;
       }
     }
-    return this.loginSinConexion(email, password);
+    const res = await this.loginSinConexion(email, password);
+    if (!res.ok && registroFallido) {
+      return { ...res, error: `${registroFallido.mensaje}`, registro: registroFallido };
+    }
+    return res;
   }
 
   private async loginSinConexion(email: string, password: string): Promise<ApiResp> {

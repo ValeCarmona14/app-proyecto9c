@@ -1,7 +1,8 @@
 import { Injectable, NgZone } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
-import axios from 'axios';
 import { AuthService } from './auth.service';
+import { HttpService } from './http.service';
+import { PeticionError, RegistroPeticion } from './peticion.model';
 
 /** Tipos de dato que guardamos por día. */
 export type TipoRegistro = 'habitos' | 'entreno' | 'diario' | 'habitos_lista';
@@ -41,10 +42,12 @@ export class DatosService {
   readonly estado$ = new BehaviorSubject<EstadoSync>(navigator.onLine ? 'al-dia' : 'sin-conexion');
   /** Se emite cada vez que llegan datos del servidor, para refrescar pantallas. */
   readonly cambios$ = new BehaviorSubject<number>(0);
+  /** Detalle de la última sincronización fallida (null = la última salió bien). */
+  readonly error$ = new BehaviorSubject<RegistroPeticion | null>(null);
 
   private sincronizandoAhora = false;
 
-  constructor(private auth: AuthService, private zone: NgZone) {
+  constructor(private auth: AuthService, private http: HttpService, private zone: NgZone) {
     window.addEventListener('online', () => this.zone.run(() => this.sincronizar()));
     window.addEventListener('offline', () => this.zone.run(() => this.estado$.next('sin-conexion')));
   }
@@ -176,12 +179,20 @@ export class DatosService {
         .filter(r => r.pendiente)
         .map(({ fecha, tipo, contenido, actualizado }) => ({ fecha, tipo, contenido, actualizado }));
 
-      const res = await axios.post(
-        await this.auth.apiUrl('sync.php'),
+      const res = await this.http.peticion<any>(
+        'post',
+        `${this.auth.CARPETA_API}/sync.php`,
         { usuario_id: uid, desde: Number(localStorage.getItem(claveUltima) || 0), registros: aSubir },
-        { timeout: 10000 },
+        10000,
       );
-      if (!res.data?.ok) throw new Error(res.data?.error || 'sync falló');
+      if (!res.data?.ok) {
+        // El PHP sí respondió, pero con ok:false (por ejemplo, error de MySQL)
+        throw new PeticionError({
+          ...res.registro,
+          exito: false,
+          mensaje: `La API respondió ok:false → ${res.data?.error || 'sin detalle'}`,
+        });
+      }
 
       // Volvemos a leer por si escribiste algo mientras viajaba la petición
       const actual = this.leerTodo();
@@ -210,10 +221,12 @@ export class DatosService {
       this.escribirTodo(actual);
       // La próxima vez solo pedimos lo que el servidor recibió después de ahora
       localStorage.setItem(claveUltima, String(res.data.ahora));
+      this.error$.next(null);
       this.estado$.next(this.pendientes() > 0 ? 'pendiente' : 'al-dia');
       this.cambios$.next(Date.now());
-    } catch {
+    } catch (e) {
       // Servidor apagado o sin red: los datos siguen seguros en el teléfono
+      this.error$.next(e instanceof PeticionError ? e.registro : null);
       this.estado$.next('pendiente');
     } finally {
       this.sincronizandoAhora = false;

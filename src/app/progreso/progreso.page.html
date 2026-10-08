@@ -1,0 +1,64 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar class="barra">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/inicio" text="" icon="arrow-back"></ion-back-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <section class="titulo">
+    <h1>progreso</h1>
+    <p>Cómo te ha ido estos días</p>
+  </section>
+
+  <!-- ===== Gráfica 1: barras ===== -->
+  <section class="bloque">
+    <header>
+      <h2>Esta semana</h2>
+      <p><strong>{{ cumplidosSemana }}</strong> de {{ totalHabitos * 7 }} hábitos cumplidos</p>
+    </header>
+    <app-grafica-barras [datos]="semana" [maximo]="totalHabitos"></app-grafica-barras>
+  </section>
+
+  <!-- ===== Gráfica 2: líneas ===== -->
+  <section class="bloque">
+    <header>
+      <h2>Entrenamiento</h2>
+      <p>Entrenaste <strong>{{ diasEntrenados }}</strong> de los últimos {{ DIAS_LARGO }} días</p>
+    </header>
+    <ion-segment [value]="medida" (ionChange)="cambiarMedida($event.detail.value)" mode="ios">
+      <ion-segment-button value="volumen"><ion-label>Volumen (kg)</ion-label></ion-segment-button>
+      <ion-segment-button value="series"><ion-label>Series</ion-label></ion-segment-button>
+    </ion-segment>
+    <app-grafica-lineas *ngIf="hayEntrenos; else sinEntrenos" [datos]="entrenos" [unidad]="unidad"></app-grafica-lineas>
+    <ng-template #sinEntrenos>
+      <p class="vacio">
+        {{ medida === 'volumen'
+          ? 'Aún no hay entrenos con peso. Registra ejercicios con kg en tu día para ver tu volumen.'
+          : 'Aún no hay entrenos. Abre tu día en el calendario y agrega un ejercicio.' }}
+      </p>
+    </ng-template>
+  </section>
+
+  <!-- ===== Gráfica 3: dona ===== -->
+  <section class="bloque">
+    <header>
+      <h2>Tus hábitos</h2>
+      <p>Días cumplidos de cada hábito en los últimos {{ DIAS_LARGO }} días</p>
+    </header>
+    <ng-container *ngIf="hayHabitos; else sinHabitos">
+      <app-grafica-dona [datos]="porHabito" [centro]="porcentaje + '%'" subCentro="de cumplimiento"></app-grafica-dona>
+      <ul class="leyenda">
+        <li *ngFor="let h of porHabito">
+          <span class="color" [style.background]="h.color"></span>
+          <span class="nombre">{{ h.nombre }}</span>
+          <span class="dias">{{ h.valor }} d</span>
+        </li>
+      </ul>
+    </ng-container>
+    <ng-template #sinHabitos>
+      <p class="vacio">Marca tus hábitos en el calendario y aquí verás cuáles cumples más.</p>
+    </ng-template>
+  </section>
+</ion-content>

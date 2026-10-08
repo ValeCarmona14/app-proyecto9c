@@ -1,0 +1,76 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar class="barra">
+    <ion-buttons slot="start">
+      <ion-button (click)="volver()" aria-label="Regresar">
+        <ion-icon slot="icon-only" name="arrow-back"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Origen de datos</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <main class="pagina">
+    <!-- 1. Formulario de conexión -->
+    <section class="tarjeta">
+      <h2><ion-icon name="server-outline"></ion-icon> Conexión</h2>
+
+      <label class="campo">
+        <span>Protocolo</span>
+        <select name="protocolo" [(ngModel)]="conexion.protocolo">
+          <option value="http">http</option>
+          <option value="https">https</option>
+        </select>
+      </label>
+
+      <label class="campo">
+        <span>IP del servidor</span>
+        <input name="ip" [(ngModel)]="conexion.ip" inputmode="url" autocapitalize="off"
+               autocorrect="off" spellcheck="false" placeholder="10.0.2.2" />
+      </label>
+
+      <div class="dos">
+        <label class="campo">
+          <span>Puerto API (Apache)</span>
+          <input name="puertoApi" type="number" inputmode="numeric" [(ngModel)]="conexion.puertoApi" />
+        </label>
+        <label class="campo">
+          <span>Puerto BD (MySQL)</span>
+          <input name="puertoBd" type="number" inputmode="numeric" [(ngModel)]="conexion.puertoBd" />
+        </label>
+      </div>
+
+      <p class="nota">Las APIs se llamarán en: <code>{{ urlBase }}/…</code></p>
+      <p class="nota">Emulador: <code>10.0.2.2</code> · Celular: la IP de tu PC (<code>ipconfig</code>).
+        El puerto de MySQL se guarda como referencia; la app solo habla con los PHP.</p>
+      <p class="error" *ngIf="errorForm">{{ errorForm }}</p>
+
+      <div class="botones">
+        <button class="principal" (click)="guardar()"><ion-icon name="save-outline"></ion-icon> Guardar</button>
+        <button class="secundario" (click)="probar()" [disabled]="probando">
+          <ion-spinner *ngIf="probando" name="crescent"></ion-spinner>
+          <ng-container *ngIf="!probando"><ion-icon name="refresh-outline"></ion-icon> Probar conexión</ng-container>
+        </button>
+      </div>
+    </section>
+
+    <!-- 2. El JSON tal cual se guarda -->
+    <section class="tarjeta">
+      <h2>JSON guardado</h2>
+      <p class="nota">Puedes editarlo a mano. Solo se aplican los cambios de <code>"conexion"</code>.</p>
+      <textarea name="json" [(ngModel)]="jsonTexto" rows="14" spellcheck="false" autocapitalize="off"></textarea>
+      <p class="error" *ngIf="errorJson">{{ errorJson }}</p>
+      <div class="botones">
+        <button class="principal" (click)="guardarJson()"><ion-icon name="save-outline"></ion-icon> Guardar JSON</button>
+        <button class="secundario" (click)="restablecer()">Restablecer</button>
+      </div>
+    </section>
+
+    <!-- 3. Última petición -->
+    <section class="tarjeta">
+      <h2>Última petición</h2>
+      <app-registro-peticion *ngIf="ultima" [registro]="ultima" titulo="Última petición"></app-registro-peticion>
+      <p class="nota" *ngIf="!ultima">Aún no se ha hecho ninguna petición.</p>
+    </section>
+  </main>
+</ion-content>

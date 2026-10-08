@@ -33,7 +33,8 @@
           <span>Servidor (IP:puerto)</span>
           <input name="servidor" [(ngModel)]="servidor" inputmode="url" autocapitalize="off"
                  autocorrect="off" spellcheck="false" placeholder="10.0.2.2:8080" />
-          <small class="ayuda">En el emulador usa 10.0.2.2:8080. En un celular, la IP de tu PC.</small>
+          <small class="ayuda">En el emulador usa 10.0.2.2:8080. En un celular, la IP de tu PC.
+            <button type="button" class="enlace" (click)="abrirOrigenDatos()">Origen de datos</button></small>
         </label>
 
         <label class="campo">
@@ -62,6 +63,9 @@
         </label>
 
         <p class="error" *ngIf="error" role="alert">{{ error }}</p>
+
+        <!-- Log de error: payload, IP destino y cabeceras de la petición -->
+        <app-registro-peticion *ngIf="registro" [registro]="registro" titulo="Log de error"></app-registro-peticion>
 
         <button class="principal" type="submit" [disabled]="cargando">
           <ion-spinner *ngIf="cargando" name="crescent"></ion-spinner>
