@@ -1,0 +1,156 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar class="barra">
+    <ion-buttons slot="start">
+      <ion-button (click)="volver()" aria-label="Regresar">
+        <ion-icon slot="icon-only" name="arrow-back"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-spinner *ngIf="cargando" slot="end" name="crescent" class="girando"></ion-spinner>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <main class="pagina">
+    <h1 class="titulo">perfil</h1>
+
+    <!-- ===== Foto de perfil ===== -->
+    <section class="cabeza">
+      <button class="avatar" (click)="cambiarFoto()" aria-label="Cambiar foto de perfil">
+        <img *ngIf="foto; else sinFoto" [src]="foto.dataUrl" alt="Tu foto de perfil" />
+        <ng-template #sinFoto><span class="iniciales">{{ iniciales || '?' }}</span></ng-template>
+        <span class="lapiz"><ion-icon name="camera-outline"></ion-icon></span>
+      </button>
+      <div class="quien">
+        <h2>{{ nombreCompleto }}</h2>
+        <p>{{ datos.email }}</p>
+        <span class="chip" *ngIf="cambioFoto === 'nueva'">Foto nueva · sin guardar</span>
+        <span class="chip" *ngIf="cambioFoto === 'quitar'">Se quitará la foto al guardar</span>
+      </div>
+    </section>
+
+    <p class="nota offline" *ngIf="sinServidor && !cargando">
+      <ion-icon name="cloud-offline-outline"></ion-icon>
+      No se pudo hablar con el servidor; estos son los datos guardados en tu teléfono.
+    </p>
+
+    <!-- ===== Metadata de la foto (exifr) ===== -->
+    <section class="tarjeta" *ngIf="foto">
+      <h3><ion-icon name="information-circle-outline"></ion-icon> Metadata de la foto</h3>
+      <p class="nota" *ngIf="foto.archivo">
+        Guardada en tu teléfono: <code>{{ foto.archivo }}</code>
+      </p>
+
+      <ul class="meta">
+        <li *ngFor="let d of principales">
+          <ion-icon [name]="d.icono"></ion-icon>
+          <span class="etq">{{ d.etiqueta }}</span>
+          <span class="val">{{ d.valor }}</span>
+        </li>
+      </ul>
+
+      <a *ngIf="gps" class="mapa" [href]="urlMapa" target="_blank" rel="noopener">
+        <ion-icon name="location-outline"></ion-icon> Ver dónde se tomó
+      </a>
+
+      <p class="nota" *ngIf="!foto.exif">
+        Esta imagen no trae metadata EXIF. Pasa con capturas de pantalla o fotos enviadas por WhatsApp,
+        que se la quitan. Prueba con una foto tomada directamente con la cámara.
+      </p>
+
+      <ng-container *ngIf="todos.length">
+        <button class="ver-todo" (click)="verTodo = !verTodo" [attr.aria-expanded]="verTodo">
+          {{ verTodo ? 'Ocultar' : 'Ver' }} todos los datos ({{ todos.length }})
+          <ion-icon name="chevron-down-outline" [class.girado]="verTodo"></ion-icon>
+        </button>
+        <dl class="todo" *ngIf="verTodo">
+          <ng-container *ngFor="let t of todos">
+            <dt>{{ t.clave }}</dt>
+            <dd>{{ t.valor }}</dd>
+          </ng-container>
+        </dl>
+      </ng-container>
+    </section>
+
+    <form (ngSubmit)="guardar()" autocomplete="on">
+      <!-- ===== Datos personales ===== -->
+      <section class="tarjeta">
+        <h3><ion-icon name="person-outline"></ion-icon> Tus datos</h3>
+        <div class="dos">
+          <label class="campo">
+            <span>Nombre</span>
+            <input name="fname" [(ngModel)]="datos.fname" autocomplete="given-name" />
+          </label>
+          <label class="campo">
+            <span>Apellido</span>
+            <input name="lname" [(ngModel)]="datos.lname" autocomplete="family-name" />
+          </label>
+        </div>
+        <label class="campo">
+          <span>Correo</span>
+          <input name="email" type="email" inputmode="email" [(ngModel)]="datos.email" autocomplete="email" />
+        </label>
+        <label class="campo">
+          <span>Teléfono</span>
+          <input name="phone" type="tel" inputmode="tel" [(ngModel)]="datos.phone" autocomplete="tel" />
+        </label>
+        <label class="campo">
+          <span>Dirección</span>
+          <input name="address" [(ngModel)]="datos.address" autocomplete="street-address" />
+        </label>
+      </section>
+
+      <!-- ===== Redes ===== -->
+      <section class="tarjeta">
+        <h3><ion-icon name="sparkles-outline"></ion-icon> Redes</h3>
+        <label class="campo">
+          <span>Twitter / X</span>
+          <input name="twitter" [(ngModel)]="datos.twitter" autocapitalize="off" placeholder="@usuario" />
+        </label>
+        <label class="campo">
+          <span>Facebook</span>
+          <input name="facebook" [(ngModel)]="datos.facebook" autocapitalize="off" />
+        </label>
+        <label class="campo">
+          <span>Google</span>
+          <input name="gplus" [(ngModel)]="datos.gplus" autocapitalize="off" />
+        </label>
+      </section>
+
+      <!-- ===== Contraseña ===== -->
+      <section class="tarjeta">
+        <h3><ion-icon name="lock-closed-outline"></ion-icon> Cambiar contraseña</h3>
+        <p class="nota">Déjalo vacío si no quieres cambiarla.</p>
+        <label class="campo">
+          <span>Contraseña actual</span>
+          <div class="con-ojo">
+            <input name="passActual" [type]="verPass ? 'text' : 'password'" [(ngModel)]="passActual"
+                   autocomplete="current-password" />
+            <button type="button" class="ojo" (click)="verPass = !verPass"
+                    [attr.aria-label]="verPass ? 'Ocultar contraseñas' : 'Mostrar contraseñas'">
+              <ion-icon [name]="verPass ? 'eye-off-outline' : 'eye-outline'"></ion-icon>
+            </button>
+          </div>
+        </label>
+        <div class="dos">
+          <label class="campo">
+            <span>Nueva</span>
+            <input name="passNueva" [type]="verPass ? 'text' : 'password'" [(ngModel)]="passNueva"
+                   autocomplete="new-password" placeholder="Mínimo 6" />
+          </label>
+          <label class="campo">
+            <span>Repítela</span>
+            <input name="passNueva2" [type]="verPass ? 'text' : 'password'" [(ngModel)]="passNueva2"
+                   autocomplete="new-password" />
+          </label>
+        </div>
+      </section>
+
+      <p class="error" *ngIf="error" role="alert">{{ error }}</p>
+
+      <button class="principal" type="submit" [disabled]="guardando">
+        <ion-spinner *ngIf="guardando" name="crescent"></ion-spinner>
+        <ng-container *ngIf="!guardando"><ion-icon name="save-outline"></ion-icon> Guardar cambios</ng-container>
+      </button>
+    </form>
+  </main>
+</ion-content>

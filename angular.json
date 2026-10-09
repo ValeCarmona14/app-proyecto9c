@@ -71,25 +71,20 @@
           "defaultConfiguration": "production"
         },
         "serve": {
-          "builder": "@angular/build:dev-server",
-          "options": {
-            "prebundle": {
-              "exclude": ["@ionic/pwa-elements"]
-            }
-          },
-          "configurations": {
-            "production": {
-              "buildTarget": "app:build:production"
-            },
-            "development": {
-              "buildTarget": "app:build:development"
-            },
-            "ci": {
-              "progress": false
-            }
-          },
-          "defaultConfiguration": "development"
-        },
+  "builder": "@angular/build:dev-server",
+  "options": {
+    "prebundle": false
+  },
+  "configurations": {
+  "production": {
+    "buildTarget": "app:build:production"
+  },
+  "development": {
+    "buildTarget": "app:build:development"
+  }
+},
+  "defaultConfiguration": "development"
+},
         "extract-i18n": {
           "builder": "@angular/build:extract-i18n",
           "options": {

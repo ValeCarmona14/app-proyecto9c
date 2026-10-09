@@ -8,6 +8,8 @@ export interface ApiResp {
   error?: string;
   usuario?: any;
   id?: number;
+  /** Aviso no grave del servidor (ej. falta correr un .sql). */
+  aviso?: string | null;
   /** Detalle de la petición (cabeceras, payload, IP destino) para el log de error. */
   registro?: RegistroPeticion;
 }
@@ -122,6 +124,26 @@ export class AuthService {
   getNombre(): string {
     const u = this.getUsuario();
     return u?.nombre || u?.fname || (u?.email ? String(u.email).split('@')[0] : '');
+  }
+
+  /**
+   * Después de editar el perfil: actualiza la sesión y las credenciales
+   * guardadas para entrar sin internet (por si cambió el correo o la contraseña).
+   */
+  async actualizarCuentaLocal(usuario: any, passwordNueva?: string): Promise<void> {
+    const anterior = this.getUsuario();
+    const emailViejo = String(anterior?.email ?? '').toLowerCase();
+    const emailNuevo = String(usuario?.email ?? emailViejo).toLowerCase();
+    this.guardarSesion({ ...anterior, ...usuario });
+
+    const raw = emailViejo ? localStorage.getItem(`fh_cred_${emailViejo}`) : null;
+    if (!raw) return;
+    const cred = JSON.parse(raw);
+    if (emailNuevo !== emailViejo) localStorage.removeItem(`fh_cred_${emailViejo}`);
+    localStorage.setItem(`fh_cred_${emailNuevo}`, JSON.stringify({
+      hash: passwordNueva ? await this.sha256(passwordNueva) : cred.hash,
+      usuario: { ...cred.usuario, ...usuario },
+    }));
   }
 
   /** true si hay una sesión activa. Lo usa el guard. */

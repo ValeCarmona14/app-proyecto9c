@@ -14,7 +14,8 @@
         <ion-icon slot="icon-only" name="stats-chart-outline"></ion-icon>
       </ion-button>
       <ion-button (click)="abrirCuenta()" aria-label="Cuenta">
-        <ion-icon slot="icon-only" name="person-circle-outline"></ion-icon>
+        <img *ngIf="avatar; else iconoCuenta" class="avatar" slot="icon-only" [src]="avatar" alt="" />
+        <ng-template #iconoCuenta><ion-icon slot="icon-only" name="person-circle-outline"></ion-icon></ng-template>
       </ion-button>
     </ion-buttons>
   </ion-toolbar>

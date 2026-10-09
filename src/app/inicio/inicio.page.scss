@@ -142,3 +142,9 @@ ion-buttons ion-button { --color: var(--fh-indigo); font-size: 18px; }
   margin-top: 16px; font-size: 13px; color: var(--fh-taupe);
   .punto { position: static; margin: 0; }
 }
+
+/* Foto de perfil en el botón de cuenta */
+.avatar {
+  width: 30px; height: 30px; border-radius: 50%; object-fit: cover;
+  box-shadow: 0 0 0 2px var(--fh-mauve);
+}

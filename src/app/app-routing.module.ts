@@ -20,6 +20,12 @@ const routes: Routes = [
     canActivate: [AuthGuard],
     loadChildren: () => import('./progreso/progreso.module').then(m => m.ProgresoPageModule),
   },
+  // Mi perfil: editar datos del usuario + foto con su metadata (exifr)
+  {
+    path: 'perfil',
+    canActivate: [AuthGuard],
+    loadChildren: () => import('./perfil/perfil.module').then(m => m.PerfilPageModule),
+  },
   // Origen de datos: se puede abrir desde el login (sin sesión) y desde el inicio
   {
     path: 'origen-datos',

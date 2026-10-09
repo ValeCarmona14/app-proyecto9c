@@ -10,6 +10,7 @@ import { registrarIconos } from '../services/iconos';
 import { RegistroPeticion } from '../services/peticion.model';
 import { ServidorService } from '../services/servidor.service';
 import { ErrorPeticionComponent } from '../compartido/error-peticion.component';
+import { FotoPerfilService } from '../services/foto-perfil.service';
 
 interface Celda {
   fecha: string;
@@ -38,6 +39,8 @@ export class InicioPage implements OnInit, OnDestroy {
   estado: EstadoSync = 'al-dia';
   fondo: string | null = null;
   fondoCss: string | null = null;
+  /** Foto de perfil (vive en el teléfono). */
+  avatar: string | null = null;
   /** Detalle de la última sincronización fallida (cabeceras, payload, IP destino). */
   errorSync: RegistroPeticion | null = null;
   private modalErrorAbierta = false;
@@ -69,6 +72,7 @@ export class InicioPage implements OnInit, OnDestroy {
     private cdr: ChangeDetectorRef,
     private toastCtrl: ToastController,
     private origen: ServidorService,
+    private fotoPerfil: FotoPerfilService,
   ) {
     registrarIconos();
   }
@@ -94,6 +98,10 @@ export class InicioPage implements OnInit, OnDestroy {
     this.armarMes();
     this.cdr.markForCheck();
     this.datos.sincronizar();
+    this.fotoPerfil.miniatura(this.auth.getUsuarioId() ?? 'local').then(a => {
+      this.avatar = a;
+      this.cdr.markForCheck();
+    });
   }
 
   ngOnDestroy() {
@@ -210,6 +218,7 @@ export class InicioPage implements OnInit, OnDestroy {
     const hoja = await this.actionCtrl.create({
       header: this.auth.getUsuario()?.email ?? 'Tu cuenta',
       buttons: [
+        { text: 'Mi perfil', icon: 'person-outline', handler: () => { this.router.navigateByUrl('/perfil'); } },
         {
           text: this.fondo ? 'Cambiar foto de fondo' : 'Poner foto de fondo',
           icon: 'image-outline',

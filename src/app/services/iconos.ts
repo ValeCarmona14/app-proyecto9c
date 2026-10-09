@@ -6,6 +6,9 @@ import {
   cloudUploadOutline, createOutline, ellipseOutline, eyeOffOutline, eyeOutline, imageOutline,
   logOutOutline, moonOutline, personAddOutline, personCircleOutline,
   sparklesOutline, statsChartOutline, syncOutline, trashOutline, walkOutline, waterOutline,
+  apertureOutline, calendarOutline, cameraOutline, chevronDownOutline, codeSlashOutline, documentOutline,
+  flashOutline, imagesOutline, informationCircleOutline, locationOutline, lockClosedOutline,
+  personOutline, resizeOutline, scanOutline, sunnyOutline, timerOutline,
 } from 'ionicons/icons';
 
 /**
@@ -46,5 +49,22 @@ export function registrarIconos() {
     'trash-outline': trashOutline,
     'walk-outline': walkOutline,
     'water-outline': waterOutline,
+    // Pantalla de perfil y metadata de la foto
+    'aperture-outline': apertureOutline,
+    'calendar-outline': calendarOutline,
+    'camera-outline': cameraOutline,
+    'chevron-down-outline': chevronDownOutline,
+    'code-slash-outline': codeSlashOutline,
+    'document-outline': documentOutline,
+    'flash-outline': flashOutline,
+    'images-outline': imagesOutline,
+    'information-circle-outline': informationCircleOutline,
+    'location-outline': locationOutline,
+    'lock-closed-outline': lockClosedOutline,
+    'person-outline': personOutline,
+    'resize-outline': resizeOutline,
+    'scan-outline': scanOutline,
+    'sunny-outline': sunnyOutline,
+    'timer-outline': timerOutline,
   });
 }
