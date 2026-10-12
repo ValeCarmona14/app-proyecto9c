@@ -52,3 +52,12 @@ ion-modal.hoja-dia {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* Loading de las peticiones a la API (LoadingService) */
+ion-loading.fh-loading {
+  --background: #fff;
+  --spinner-color: var(--fh-indigo);
+  color: var(--fh-amethyst);
+  font-weight: 700;
+  .loading-wrapper { border-radius: 18px; }
+}

@@ -26,6 +26,12 @@ const routes: Routes = [
     canActivate: [AuthGuard],
     loadChildren: () => import('./perfil/perfil.module').then(m => m.PerfilPageModule),
   },
+  // Mis hábitos: CRUD contra la API REST (GET, POST, PUT, PATCH, DELETE)
+  {
+    path: 'habitos',
+    canActivate: [AuthGuard],
+    loadChildren: () => import('./habitos/habitos.module').then(m => m.HabitosPageModule),
+  },
   // Origen de datos: se puede abrir desde el login (sin sesión) y desde el inicio
   {
     path: 'origen-datos',

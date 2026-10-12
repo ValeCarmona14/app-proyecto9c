@@ -1,0 +1,90 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar class="barra">
+    <ion-buttons slot="start">
+      <ion-button (click)="volver()" aria-label="Regresar">
+        <ion-icon slot="icon-only" name="arrow-back"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-buttons slot="end">
+      <ion-button (click)="cargar()" aria-label="Recargar">
+        <ion-icon slot="icon-only" name="refresh-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+  <ion-progress-bar *ngIf="loading.cargando$ | async" type="indeterminate"></ion-progress-bar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <!-- Jalar hacia abajo = GET sin el loading de pantalla completa -->
+  <ion-refresher slot="fixed" (ionRefresh)="cargar($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <main class="pagina">
+    <h1 class="titulo">hábitos</h1>
+    <p class="sub" *ngIf="cargado && !errorCarga">
+      {{ habitos.length }} en el servidor · {{ activos }} {{ activos === 1 ? 'activo' : 'activos' }}
+    </p>
+
+    <!-- Datos de la API y última respuesta -->
+    <section class="api">
+      <div class="url">
+        <ion-icon name="server-outline"></ion-icon>
+        <code>{{ urlApi }}/habitos</code>
+      </div>
+      <button class="ultima" *ngIf="ultima" (click)="verDetalle()" [class.mal]="!ultima.exito">
+        <span class="verbo" [attr.data-m]="ultima.metodo">{{ ultima.metodo }}</span>
+        <span class="estado">{{ ultima.estadoHttp ?? 'sin respuesta' }}</span>
+        <span class="ms">{{ ultima.duracionMs }} ms</span>
+        <span class="ver">Ver detalle</span>
+      </button>
+      <label class="lenta">
+        <span><ion-icon name="speedometer-outline"></ion-icon> Simular red lenta (2 s)</span>
+        <ion-toggle [checked]="loading.redLenta" (ionChange)="cambiarRedLenta($event)"></ion-toggle>
+      </label>
+    </section>
+
+    <!-- Error al cargar la lista -->
+    <section class="estado-vacio error" *ngIf="errorCarga && !habitos.length">
+      <ion-icon name="cloud-offline-outline"></ion-icon>
+      <h2>No se pudieron cargar los hábitos</h2>
+      <p>{{ errorCarga.mensaje }}<span *ngIf="errorCarga.status"> (HTTP {{ errorCarga.status }})</span></p>
+      <div class="botones">
+        <button class="principal" (click)="cargar()"><ion-icon name="refresh-outline"></ion-icon> Reintentar</button>
+        <button class="secundario" (click)="verDetalle()"><ion-icon name="alert-circle-outline"></ion-icon> Ver detalle</button>
+      </div>
+    </section>
+
+    <!-- Lista vacía -->
+    <section class="estado-vacio" *ngIf="cargado && !errorCarga && !habitos.length">
+      <ion-icon name="sparkles-outline"></ion-icon>
+      <h2>Aún no tienes hábitos en el servidor</h2>
+      <p>Toca <strong>+</strong> para crear el primero.</p>
+    </section>
+
+    <!-- Lista -->
+    <ul class="lista" *ngIf="habitos.length">
+      <li *ngFor="let h of habitos" class="habito" [class.pausado]="!h.activo" (click)="abrirFormulario(h)">
+        <span class="icono" [style.background]="h.color">
+          <ion-icon [name]="h.icono"></ion-icon>
+        </span>
+        <div class="info">
+          <strong>{{ h.nombre }}</strong>
+          <small>{{ h.metaDiaria }} {{ h.unidad }} al día · {{ categoria(h.categoria).nombre }}</small>
+          <small class="desc" *ngIf="h.descripcion">{{ h.descripcion }}</small>
+        </div>
+        <ion-toggle [checked]="h.activo" [disabled]="cambiandoId === h.id"
+                    (click)="cambiarActivo(h, $event)" aria-label="Activo"></ion-toggle>
+        <button class="borrar" (click)="eliminar(h, $event)" aria-label="Eliminar">
+          <ion-icon name="trash-outline"></ion-icon>
+        </button>
+      </li>
+    </ul>
+  </main>
+
+  <ion-fab slot="fixed" vertical="bottom" horizontal="end">
+    <ion-fab-button (click)="abrirFormulario()" aria-label="Nuevo hábito">
+      <ion-icon name="add-outline"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+</ion-content>

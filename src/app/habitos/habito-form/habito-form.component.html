@@ -1,0 +1,68 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar class="barra">
+    <ion-buttons slot="start">
+      <ion-button (click)="cancelar()">Cancelar</ion-button>
+    </ion-buttons>
+    <ion-title>{{ editando ? 'Editar hábito' : 'Nuevo hábito' }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <form class="pagina" (ngSubmit)="guardar()" novalidate>
+    <span class="metodo">{{ editando ? 'PUT /habitos/' + habito?.id : 'POST /habitos' }}</span>
+
+    <label class="campo">
+      <span>Nombre</span>
+      <input name="nombre" [(ngModel)]="form.nombre" maxlength="80" placeholder="Ej. Tomar agua" />
+      <small class="error" *ngIf="errores.nombre">{{ errores.nombre }}</small>
+    </label>
+
+    <label class="campo">
+      <span>Descripción <em>(opcional)</em></span>
+      <input name="descripcion" [(ngModel)]="form.descripcion" maxlength="255" placeholder="Ej. Un vaso cada hora" />
+    </label>
+
+    <div class="campo">
+      <span>Categoría</span>
+      <div class="chips">
+        <button type="button" *ngFor="let c of categorias" class="chip"
+                [class.activa]="form.categoria === c.valor" (click)="elegirCategoria(c.valor)">
+          <ion-icon [name]="c.icono"></ion-icon>{{ c.nombre }}
+        </button>
+      </div>
+    </div>
+
+    <div class="dos">
+      <label class="campo">
+        <span>Meta diaria</span>
+        <input name="meta" type="number" inputmode="numeric" min="1" [(ngModel)]="form.metaDiaria" />
+        <small class="error" *ngIf="errores.metaDiaria">{{ errores.metaDiaria }}</small>
+      </label>
+      <label class="campo">
+        <span>Unidad</span>
+        <input name="unidad" [(ngModel)]="form.unidad" maxlength="30" />
+        <small class="error" *ngIf="errores.unidad">{{ errores.unidad }}</small>
+      </label>
+    </div>
+
+    <div class="campo">
+      <span>Color</span>
+      <div class="colores">
+        <button type="button" *ngFor="let c of colores" class="color" [style.background]="c"
+                [class.activo]="form.color === c" (click)="form.color = c" [attr.aria-label]="'Color ' + c"></button>
+      </div>
+    </div>
+
+    <label class="activo">
+      <span>
+        <strong>Activo</strong>
+        <small>Los hábitos pausados se quedan guardados pero no cuentan.</small>
+      </span>
+      <ion-toggle name="activo" [(ngModel)]="form.activo"></ion-toggle>
+    </label>
+
+    <button type="submit" class="guardar">
+      <ion-icon name="save-outline"></ion-icon>{{ editando ? 'Guardar cambios' : 'Crear hábito' }}
+    </button>
+  </form>
+</ion-content>

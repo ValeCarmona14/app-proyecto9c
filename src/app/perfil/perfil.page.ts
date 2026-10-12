@@ -8,6 +8,7 @@ import { DatoMeta, FotoPerfil, FotoPerfilService } from '../services/foto-perfil
 import { RegistroPeticion } from '../services/peticion.model';
 import { ErrorPeticionComponent } from '../compartido/error-peticion.component';
 import { registrarIconos } from '../services/iconos';
+import { CompartirBleComponent } from './compartir-ble/compartir-ble.component';
 
 const VACIO: DatosPerfil = { email: '', fname: '', lname: '', phone: '', address: '', twitter: '', facebook: '', gplus: '' };
 
@@ -16,6 +17,7 @@ const VACIO: DatosPerfil = { email: '', fname: '', lname: '', phone: '', address
  *  - edita los datos del usuario (tab1_api/perfil.php)
  *  - foto de perfil hospedada en el teléfono
  *  - muestra la metadata de esa foto leída con exifr
+ *  - la envía / recibe de otro celular por Bluetooth LE (modal Compartir)
  */
 @Component({
   selector: 'app-perfil',
@@ -129,6 +131,18 @@ export class PerfilPage {
       const msg = String(e?.message ?? e);
       if (!/cancel/i.test(msg)) this.aviso('No se pudo abrir la imagen: ' + msg);
     }
+  }
+
+  /** Modal para mandar la metadata a otro celular (o recibir la de otro) por Bluetooth. */
+  async abrirCompartir() {
+    const modal = await this.modalCtrl.create({
+      component: CompartirBleComponent,
+      componentProps: {
+        foto: this.foto,
+        nombre: [this.datos.fname, this.datos.lname].filter(Boolean).join(' ') || this.datos.email.split('@')[0],
+      },
+    });
+    await modal.present();
   }
 
   private quitarFoto() {

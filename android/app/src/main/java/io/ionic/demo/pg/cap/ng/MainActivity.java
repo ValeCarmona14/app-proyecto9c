@@ -1,5 +1,13 @@
 package io.ionic.demo.pg.cap.ng;
 
-import com.getcapacitor.BridgeActivity;
+ import android.os.Bundle;
+ import com.fithabitos.ble.PerifericoBlePlugin;
+  import com.getcapacitor.BridgeActivity;
 
-public class MainActivity extends BridgeActivity {}
+public class MainActivity extends BridgeActivity {
+ @Override
+     public void onCreate(Bundle savedInstanceState) {
+       registerPlugin(PerifericoBlePlugin.class);   // ANTES de super.onCreate
+        super.onCreate(savedInstanceState);
+     }
+}

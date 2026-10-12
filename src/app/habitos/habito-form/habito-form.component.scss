@@ -1,0 +1,54 @@
+ion-content { --background: var(--fh-paper); --color: var(--fh-amethyst); }
+.barra { --background: var(--fh-paper); --color: var(--fh-indigo); }
+ion-title { font-weight: 800; color: var(--fh-amethyst); }
+
+.pagina { max-width: 560px; margin: 0 auto; padding: 8px 16px 40px; }
+.metodo {
+  display: inline-block; margin: 0 4px 14px; padding: 4px 10px; border-radius: 999px;
+  background: var(--fh-rose); color: var(--fh-indigo); font-family: monospace; font-size: 12px; font-weight: 700;
+}
+
+.campo {
+  display: block; margin-bottom: 14px;
+  > span { display: block; margin: 0 0 6px 4px; font-size: 13px; font-weight: 700; color: var(--fh-grape); }
+  em { font-weight: 500; font-style: normal; opacity: 0.8; }
+}
+input {
+  width: 100%; padding: 12px 14px; border-radius: 14px;
+  border: 1.5px solid var(--fh-rose); background: #fff;
+  color: var(--fh-amethyst); font: inherit; font-size: 16px; outline: none;
+  &:focus { border-color: var(--fh-grape); }
+}
+.error { display: block; margin: 6px 4px 0; color: #c0334d; font-weight: 600; font-size: 13px; }
+.dos { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip {
+  display: inline-flex; align-items: center; gap: 6px; padding: 8px 12px;
+  border: 1.5px solid var(--fh-rose); border-radius: 999px; background: #fff;
+  color: var(--fh-indigo); font: inherit; font-size: 14px; font-weight: 700;
+  ion-icon { font-size: 16px; }
+  &.activa { background: var(--fh-indigo); border-color: var(--fh-indigo); color: #fff; }
+}
+
+.colores { display: flex; flex-wrap: wrap; gap: 10px; }
+.color {
+  width: 36px; height: 36px; padding: 0; border: 0; border-radius: 50%;
+  box-shadow: 0 0 0 3px var(--fh-paper), 0 0 0 4px transparent;
+  &.activo { box-shadow: 0 0 0 3px var(--fh-paper), 0 0 0 5px var(--fh-amethyst); }
+}
+
+.activo {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  margin: 6px 0 20px; padding: 14px 16px; border-radius: 16px; background: #fff;
+  box-shadow: inset 0 0 0 1px rgba(226, 194, 198, 0.7);
+  strong, small { display: block; }
+  small { margin-top: 2px; color: var(--fh-mauve); font-size: 12px; }
+  ion-toggle { --track-background-checked: var(--fh-indigo); flex: none; }
+}
+
+.guardar {
+  width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px;
+  min-height: 52px; border: 0; border-radius: 16px;
+  background: var(--fh-indigo); color: #fff; font: inherit; font-size: 16px; font-weight: 800;
+}

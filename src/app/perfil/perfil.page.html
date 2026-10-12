@@ -15,11 +15,17 @@
 
     <!-- ===== Foto de perfil ===== -->
     <section class="cabeza">
-      <button class="avatar" (click)="cambiarFoto()" aria-label="Cambiar foto de perfil">
-        <img *ngIf="foto; else sinFoto" [src]="foto.dataUrl" alt="Tu foto de perfil" />
-        <ng-template #sinFoto><span class="iniciales">{{ iniciales || '?' }}</span></ng-template>
-        <span class="lapiz"><ion-icon name="camera-outline"></ion-icon></span>
-      </button>
+      <div class="foto-col">
+        <button class="avatar" (click)="cambiarFoto()" aria-label="Cambiar foto de perfil">
+          <img *ngIf="foto; else sinFoto" [src]="foto.dataUrl" alt="Tu foto de perfil" />
+          <ng-template #sinFoto><span class="iniciales">{{ iniciales || '?' }}</span></ng-template>
+          <span class="lapiz"><ion-icon name="camera-outline"></ion-icon></span>
+        </button>
+        <!-- Enviar / recibir la metadata de la foto entre celulares -->
+        <button class="compartir" (click)="abrirCompartir()">
+          <ion-icon name="bluetooth-outline"></ion-icon> Compartir
+        </button>
+      </div>
       <div class="quien">
         <h2>{{ nombreCompleto }}</h2>
         <p>{{ datos.email }}</p>

@@ -1,0 +1,163 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar class="barra">
+    <ion-title>Compartir por Bluetooth</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="cerrar()" aria-label="Cerrar">
+        <ion-icon slot="icon-only" name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <main class="pagina">
+    <p class="aviso" *ngIf="!disponible">
+      <ion-icon name="information-circle-outline"></ion-icon>
+      El envío entre celulares solo funciona en la app instalada en Android. En el navegador no hay Bluetooth.
+    </p>
+
+    <ion-segment [value]="modo" (ionChange)="cambiarModo($event.detail.value)" mode="ios">
+      <ion-segment-button value="enviar"><ion-label>Enviar</ion-label></ion-segment-button>
+      <ion-segment-button value="recibir"><ion-label>Recibir</ion-label></ion-segment-button>
+    </ion-segment>
+
+    <!-- =============== CELULAR A: ENVIAR =============== -->
+    <ng-container *ngIf="modo === 'enviar'">
+      <p class="vacio" *ngIf="!foto">
+        Primero pon una foto de perfil: lo que se envía es su metadata.
+        También puedes cambiar a <strong>Recibir</strong> para que alguien te mande la suya.
+      </p>
+
+      <ng-container *ngIf="foto">
+        <section class="resumen">
+          <img [src]="foto.dataUrl" alt="" />
+          <div>
+            <strong>Vas a enviar la metadata de tu foto</strong>
+            <span>{{ principales.length }} datos principales · {{ totalDatos }} campos en total</span>
+          </div>
+        </section>
+
+        <!-- Indicador de pasos del envío -->
+        <section class="envio" *ngIf="fase !== 'inactivo' && fase !== 'error'" aria-live="polite">
+          <p class="para">Para <strong>{{ destino }}</strong></p>
+          <ol class="pasos">
+            <li *ngFor="let p of pasos; let i = index"
+                [class.hecho]="i < pasoActual || fase === 'enviado'"
+                [class.actual]="i === pasoActual && fase !== 'enviado'"
+                [class.malo]="fase === 'rechazado' && i === 1">
+              <span class="num">{{ i + 1 }}</span>{{ p }}
+            </li>
+          </ol>
+          <p class="detalle" [ngSwitch]="fase">
+            <span *ngSwitchCase="'conectando'">Conectando…</span>
+            <span *ngSwitchCase="'esperando'">Esperando que {{ destino }} acepte la conexión…</span>
+            <span *ngSwitchCase="'enviando'">Enviando… {{ pct }}%</span>
+            <span *ngSwitchCase="'confirmando'">Confirmando que llegó completo…</span>
+            <span *ngSwitchCase="'enviado'" class="bien"><ion-icon name="checkmark-circle-outline"></ion-icon> ¡Listo! {{ destino }} ya tiene tu metadata.</span>
+            <span *ngSwitchCase="'rechazado'" class="mal"><ion-icon name="close-circle-outline"></ion-icon> {{ destino }} rechazó la conexión.</span>
+          </p>
+          <div class="barra-progreso" *ngIf="fase === 'enviando' || fase === 'confirmando'">
+            <span [style.width.%]="pct"></span>
+          </div>
+        </section>
+
+        <p class="error" *ngIf="errorEnvio" role="alert">{{ errorEnvio }}</p>
+
+        <button class="principal" *ngIf="!buscando" (click)="buscar()" [disabled]="ocupado || !disponible">
+          <ion-icon name="bluetooth-outline"></ion-icon> Buscar celulares
+        </button>
+        <button class="secundario" *ngIf="buscando" (click)="detenerBusqueda()">
+          <ion-spinner name="crescent"></ion-spinner> Buscando… toca para detener
+        </button>
+        <p class="nota">En el otro celular abre Mi perfil → Compartir por Bluetooth → <strong>Recibir</strong>.</p>
+        <p class="nota alerta" *ngIf="ubicacionOff">
+          Tu Ubicación está apagada; en algunos celulares la búsqueda no encuentra nada así.
+          <button class="enlace" (click)="abrirUbicacion()">Activarla</button>
+        </p>
+
+        <ul class="dispositivos" *ngIf="encontrados.length">
+          <li *ngFor="let d of encontrados">
+            <ion-icon name="phone-portrait-outline" class="cel"></ion-icon>
+            <div class="info">
+              <strong>{{ d.nombre }}</strong>
+              <span class="senal" [attr.aria-label]="'Señal ' + nivelSenal(d.rssi) + ' de 4'">
+                <i *ngFor="let n of [1, 2, 3, 4]" [class.on]="n <= nivelSenal(d.rssi)"></i>
+              </span>
+            </div>
+            <button (click)="enviarA(d)" [disabled]="ocupado">Enviar</button>
+          </li>
+        </ul>
+        <p class="vacio" *ngIf="buscado && !buscando && !encontrados.length && !errorEnvio">
+          No apareció ningún celular. Revisa que el otro esté en <strong>Recibir</strong> y con el Bluetooth encendido.
+        </p>
+      </ng-container>
+    </ng-container>
+
+    <!-- =============== CELULAR B: RECIBIR =============== -->
+    <ng-container *ngIf="modo === 'recibir'">
+      <ng-container *ngIf="!recibido">
+        <section class="radar" [class.activo]="visible">
+          <div class="ondas" aria-hidden="true"><span></span><span></span><span></span></div>
+          <div class="centro"><ion-icon name="bluetooth-outline"></ion-icon></div>
+        </section>
+
+        <p class="estado-recibir" aria-live="polite" [ngSwitch]="recepcion">
+          <span *ngSwitchCase="'apagado'">Hazte visible para que otro celular te encuentre.</span>
+          <span *ngSwitchCase="'activando'">Activando…</span>
+          <span *ngSwitchCase="'esperando'">Visible como <strong>{{ nombre || 'FitHábitos' }}</strong>. Esperando una conexión…</span>
+          <span *ngSwitchCase="'pidiendo'"><strong>{{ remitente }}</strong> quiere conectarse.</span>
+          <span *ngSwitchCase="'recibiendo'">Recibiendo de <strong>{{ remitente }}</strong>… {{ pctRecepcion }}%</span>
+        </p>
+        <div class="barra-progreso" *ngIf="recepcion === 'recibiendo'"><span [style.width.%]="pctRecepcion"></span></div>
+
+        <p class="error" *ngIf="errorRecepcion" role="alert">{{ errorRecepcion }}</p>
+
+        <button [class]="visible ? 'secundario' : 'principal'" (click)="alternarVisible()"
+                [disabled]="recepcion === 'activando' || recepcion === 'recibiendo' || !disponible">
+          <ion-icon [name]="visible ? 'close-circle-outline' : 'radio-outline'"></ion-icon>
+          {{ visible ? 'Dejar de estar visible' : 'Hacerme visible' }}
+        </button>
+      </ng-container>
+
+      <!-- Metadata que llegó -->
+      <ng-container *ngIf="recibido as r">
+        <section class="llego">
+          <img *ngIf="r.miniatura" [src]="r.miniatura" alt="Foto de {{ r.de }}" />
+          <div>
+            <strong>{{ r.de }} te envió la metadata de su foto</strong>
+            <span>{{ horaRecibido(r.enviado) }}</span>
+          </div>
+        </section>
+
+        <section class="tarjeta">
+          <ul class="meta">
+            <li *ngFor="let d of r.principales">
+              <ion-icon [name]="d.icono"></ion-icon>
+              <span class="etq">{{ d.etiqueta }}</span>
+              <span class="val">{{ d.valor }}</span>
+            </li>
+          </ul>
+          <a *ngIf="r.gps" class="mapa" [href]="urlMapa(r.gps)" target="_blank" rel="noopener">
+            <ion-icon name="location-outline"></ion-icon> Ver dónde se tomó
+          </a>
+          <ng-container *ngIf="r.todos.length">
+            <button class="ver-todo" (click)="verTodo = !verTodo" [attr.aria-expanded]="verTodo">
+              {{ verTodo ? 'Ocultar' : 'Ver' }} todos los datos ({{ r.todos.length }})
+              <ion-icon name="chevron-down-outline" [class.girado]="verTodo"></ion-icon>
+            </button>
+            <dl class="todo" *ngIf="verTodo">
+              <ng-container *ngFor="let t of r.todos">
+                <dt>{{ t.clave }}</dt>
+                <dd>{{ t.valor }}</dd>
+              </ng-container>
+            </dl>
+          </ng-container>
+        </section>
+
+        <button class="secundario" (click)="recibirOtra()">
+          <ion-icon name="download-outline"></ion-icon> Recibir otra
+        </button>
+      </ng-container>
+    </ng-container>
+  </main>
+</ion-content>

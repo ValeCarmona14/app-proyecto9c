@@ -218,6 +218,7 @@ export class InicioPage implements OnInit, OnDestroy {
     const hoja = await this.actionCtrl.create({
       header: this.auth.getUsuario()?.email ?? 'Tu cuenta',
       buttons: [
+        { text: 'Mis hábitos (API)', icon: 'list-outline', handler: () => { this.router.navigateByUrl('/habitos'); } },
         { text: 'Mi perfil', icon: 'person-outline', handler: () => { this.router.navigateByUrl('/perfil'); } },
         {
           text: this.fondo ? 'Cambiar foto de fondo' : 'Poner foto de fondo',
