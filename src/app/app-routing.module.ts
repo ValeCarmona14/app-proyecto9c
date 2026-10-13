@@ -26,11 +26,11 @@ const routes: Routes = [
     canActivate: [AuthGuard],
     loadChildren: () => import('./perfil/perfil.module').then(m => m.PerfilPageModule),
   },
-  // Mis hábitos: CRUD contra la API REST (GET, POST, PUT, PATCH, DELETE)
+  // Editar foto: cámara → PhotoEditor SDK → guardar en el teléfono
   {
-    path: 'habitos',
+    path: 'editar-foto',
     canActivate: [AuthGuard],
-    loadChildren: () => import('./habitos/habitos.module').then(m => m.HabitosPageModule),
+    loadChildren: () => import('./editor-foto/editor-foto.module').then(m => m.EditorFotoPageModule),
   },
   // Origen de datos: se puede abrir desde el login (sin sesión) y desde el inicio
   {

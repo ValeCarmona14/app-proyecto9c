@@ -9,7 +9,6 @@ import {
   apertureOutline, calendarOutline, cameraOutline, chevronDownOutline, codeSlashOutline, documentOutline,
   flashOutline, imagesOutline, informationCircleOutline, locationOutline, lockClosedOutline,
   personOutline, resizeOutline, scanOutline, sunnyOutline, timerOutline,
-  addOutline, listOutline, nutritionOutline, speedometerOutline,
   bluetoothOutline, closeCircleOutline, downloadOutline, phonePortraitOutline, radioOutline,
 } from 'ionicons/icons';
 
@@ -19,10 +18,6 @@ import {
  */
 export function registrarIconos() {
   addIcons({
-    'add-outline': addOutline,
-    'list-outline': listOutline,
-    'nutrition-outline': nutritionOutline,
-    'speedometer-outline': speedometerOutline,
     'alert-circle-outline': alertCircleOutline,
     'checkmark-circle-outline': checkmarkCircleOutline,
     'copy-outline': copyOutline,

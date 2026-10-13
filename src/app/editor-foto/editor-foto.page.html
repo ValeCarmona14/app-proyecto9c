@@ -1,0 +1,61 @@
+<ion-header class="ion-no-border" *ngIf="estado !== 'editando'">
+  <ion-toolbar class="barra">
+    <ion-buttons slot="start">
+      <ion-button (click)="volver()" aria-label="Regresar">
+        <ion-icon slot="icon-only" name="arrow-back"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" [scrollY]="estado !== 'editando'">
+  <!-- Aquí se dibuja el PhotoEditor SDK, encima de todo -->
+  <div slot="fixed" #lienzo class="lienzo" [class.visible]="estado === 'editando' || estado === 'guardando'"></div>
+
+  <div class="tapa" slot="fixed" *ngIf="estado === 'guardando' || estado === 'abriendo'">
+    <ion-spinner name="crescent"></ion-spinner>
+    <p>{{ estado === 'abriendo' ? 'Abriendo el editor…' : 'Guardando en tu teléfono…' }}</p>
+  </div>
+
+  <main class="pagina" *ngIf="estado !== 'editando'">
+    <h1 class="titulo">editar</h1>
+    <p class="sub">Toma una foto, edítala y guárdala en tu teléfono.</p>
+
+    <section class="acciones">
+      <button class="camara" (click)="tomarFoto()" [disabled]="estado !== 'inicio'">
+        <ion-icon name="camera-outline"></ion-icon>
+        <span>Tomar foto</span>
+      </button>
+      <button class="galeria" (click)="elegirDeGaleria()" [disabled]="estado !== 'inicio'">
+        <ion-icon name="images-outline"></ion-icon> Elegir de la galería
+      </button>
+    </section>
+
+    <p class="error" *ngIf="error" role="alert">{{ error }}</p>
+
+    <!-- La última que se guardó -->
+    <section class="guardada" *ngIf="ultima as u">
+      <img [src]="u.src" alt="Foto editada" />
+      <div>
+        <strong><ion-icon name="checkmark-circle-outline"></ion-icon> Foto guardada</strong>
+        <span class="ruta">{{ u.rutaLegible }}</span>
+        <code>{{ u.uri }}</code>
+      </div>
+    </section>
+
+    <!-- Todas las editadas -->
+    <section class="lista">
+      <h2>Tus fotos editadas</h2>
+      <p class="nota" *ngIf="!fotos.length && !cargandoLista">Todavía no has guardado ninguna.</p>
+      <ul>
+        <li *ngFor="let f of fotos">
+          <button (click)="opciones(f)" [attr.aria-label]="'Opciones de ' + f.nombre">
+            <img [src]="f.src" alt="" loading="lazy" />
+            <span class="nombre">{{ fecha(f.fecha) }}</span>
+            <span class="detalle">{{ tamano(f.tamano) }} · {{ lugar(f) }}</span>
+          </button>
+        </li>
+      </ul>
+    </section>
+  </main>
+</ion-content>

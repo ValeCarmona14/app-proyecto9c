@@ -1,0 +1,81 @@
+ion-content { --background: var(--fh-paper); --color: var(--fh-amethyst); }
+.barra { --background: var(--fh-paper); --color: var(--fh-indigo); padding: 0 8px; }
+
+/* ---------- El editor (PhotoEditor SDK) ocupa toda la pantalla ---------- */
+.lienzo {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  display: none;
+  background: var(--fh-amethyst);
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+  box-sizing: border-box;
+  &.visible { display: block; }
+}
+.tapa {
+  position: absolute; inset: 0; z-index: 10;
+  display: grid; place-content: center; justify-items: center; gap: 12px;
+  background: rgba(47, 1, 71, 0.82); color: var(--fh-paper);
+  font-weight: 700;
+  ion-spinner { width: 40px; height: 40px; color: var(--fh-rose); }
+  p { margin: 0; }
+}
+
+/* ---------- Inicio ---------- */
+.pagina { max-width: 720px; margin: 0 auto; padding: 0 16px 48px; }
+.titulo {
+  margin: 4px 4px 0;
+  font-size: clamp(48px, 13vw, 96px);
+  line-height: 0.9; font-weight: 900; letter-spacing: -0.05em;
+  color: var(--fh-amethyst);
+}
+.sub { margin: 10px 4px 20px; font-size: 16px; font-weight: 700; color: var(--fh-mauve); }
+
+.acciones { display: grid; gap: 10px; }
+.camara {
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;
+  min-height: 168px; border: 0; border-radius: 28px;
+  background: var(--fh-indigo); color: #fff; font: inherit;
+  ion-icon { font-size: 52px; }
+  span { font-size: 20px; font-weight: 900; letter-spacing: -0.01em; }
+  &:active { transform: scale(0.98); }
+}
+.galeria {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  min-height: 52px; border: 0; border-radius: 18px;
+  background: var(--fh-rose); color: var(--fh-amethyst); font: inherit; font-weight: 800;
+}
+.camara:disabled, .galeria:disabled { opacity: 0.6; }
+
+.error { margin: 12px 4px; color: #c0334d; font-weight: 600; font-size: 14px; }
+.nota { margin: 6px 4px; font-size: 14px; color: var(--fh-mauve); }
+
+/* ---------- Última guardada ---------- */
+.guardada {
+  display: flex; gap: 14px; align-items: center;
+  margin-top: 18px; padding: 14px; border-radius: 20px;
+  background: #fff; box-shadow: inset 0 0 0 1px rgba(226, 194, 198, 0.7);
+  img { flex: none; width: 84px; height: 84px; border-radius: 14px; object-fit: cover; }
+  div { min-width: 0; display: grid; gap: 4px; }
+  strong { display: flex; align-items: center; gap: 6px; font-weight: 900; color: var(--fh-indigo); }
+  .ruta { font-weight: 700; font-size: 14px; overflow-wrap: anywhere; }
+  code { font-size: 11px; color: var(--fh-taupe); word-break: break-all; }
+}
+
+/* ---------- Lista ---------- */
+.lista {
+  margin-top: 28px;
+  h2 { margin: 0 4px 10px; font-size: 22px; font-weight: 900; letter-spacing: -0.02em; }
+  ul {
+    list-style: none; margin: 0; padding: 0;
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px;
+  }
+  button {
+    display: grid; gap: 2px; width: 100%; padding: 0 0 10px; border: 0; border-radius: 18px;
+    background: #fff; box-shadow: inset 0 0 0 1px rgba(226, 194, 198, 0.7);
+    font: inherit; text-align: left; color: inherit; overflow: hidden;
+  }
+  img { width: 100%; aspect-ratio: 1; object-fit: cover; background: var(--fh-rose); margin-bottom: 6px; }
+  .nombre { padding: 0 10px; font-size: 13px; font-weight: 800; }
+  .detalle { padding: 0 10px; font-size: 12px; color: var(--fh-taupe); }
+}
